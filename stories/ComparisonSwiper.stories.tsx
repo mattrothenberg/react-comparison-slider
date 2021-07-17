@@ -1,26 +1,11 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 
-import { Meta, Story } from '@storybook/react';
 import { jsx, css } from '@emotion/react';
 import { Fragment } from 'react';
 import { ComparisonSwiper } from '../src';
 import { useState } from '@storybook/addons';
-import { BiMoveHorizontal } from 'react-icons/bi';
-// const meta: Meta = {
-//   title: 'Comparison Swiper',
-//   component: ComparisonSwiper,
-//   // argTypes: {
-//   //   children: {
-//   //     control: {
-//   //       type: 'text',
-//   //     },
-//   //   },
-//   // },
-//   // parameters: {
-//   //   controls: { expanded: true },
-//   // },
-// };
+import { BiMoveHorizontal, BiStar } from 'react-icons/bi';
 
 export default {
   title: 'ComparisonSwiper',
@@ -190,7 +175,7 @@ export const WithImages = () => {
     <div
       css={css`
         width: 500px;
-        border: 1px solid black;
+        border: 2px solid black;
       `}
     >
       <ComparisonSwiper
@@ -217,7 +202,7 @@ export const WithImages = () => {
               ref={props.forwardedRef}
               {...props}
             >
-              <BiMoveHorizontal color="white" size={24} />
+              <BiStar color="white" size={24} />
             </div>
           );
         }}
