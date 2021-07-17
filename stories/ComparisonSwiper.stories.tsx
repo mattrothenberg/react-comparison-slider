@@ -3,70 +3,184 @@
 
 import { Meta, Story } from '@storybook/react';
 import { jsx, css } from '@emotion/react';
-import { Thing, Props } from '../src';
+import { Fragment } from 'react';
+import { ComparisonSwiper } from '../src';
+import { useState } from '@storybook/addons';
+import { BiMoveHorizontal } from 'react-icons/bi';
+// const meta: Meta = {
+//   title: 'Comparison Swiper',
+//   component: ComparisonSwiper,
+//   // argTypes: {
+//   //   children: {
+//   //     control: {
+//   //       type: 'text',
+//   //     },
+//   //   },
+//   // },
+//   // parameters: {
+//   //   controls: { expanded: true },
+//   // },
+// };
 
-const meta: Meta = {
-  title: 'Comparison Swiper',
-  component: Thing,
-  argTypes: {
-    children: {
-      control: {
-        type: 'text',
-      },
-    },
-  },
-  parameters: {
-    controls: { expanded: true },
-  },
+export default {
+  title: 'ComparisonSwiper',
+  component: ComparisonSwiper,
 };
 
-export default meta;
+export const Default = () => {
+  return (
+    <ComparisonSwiper
+      defaultValue={50}
+      beforeElement={<div css={{ background: 'tomato' }}></div>}
+      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      aspectRatio={16 / 9}
+    />
+  );
+};
 
-const Template: Story<Props> = (args) => <Thing {...args} />;
+export const UncontrolledInitialValue = () => {
+  return (
+    <ComparisonSwiper
+      defaultValue={75}
+      beforeElement={<div css={{ background: 'tomato' }}></div>}
+      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      aspectRatio={16 / 9}
+    />
+  );
+};
 
-// By passing using the Args format for exported stories, you can control the props for a component for reuse in a test
-// https://storybook.js.org/docs/react/workflows/unit-testing
-export const Default = Template.bind({});
+export const FullyControlled = () => {
+  const [value, setValue] = useState(50);
+  return (
+    <ComparisonSwiper
+      value={value}
+      onValueChange={setValue}
+      beforeElement={<div css={{ background: 'tomato' }}></div>}
+      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      aspectRatio={16 / 9}
+      handleStyle={{
+        background: 'white',
+      }}
+    />
+  );
+};
 
-Default.args = {
-  beforeElement: <div css={{ background: 'red' }}></div>,
-  afterElement: <div css={{ background: 'blue' }}></div>,
-  // aspectRatio: 16 / 9,
-  aspectRatio: '4x3',
-  beforeDecorationComponent: ({ value }: { value: number }) => {
-    return (
-      <div
-        css={css`
-          position: absolute;
-          top: 16px;
-          left: 16px;
-        `}
-      >
-        Hey I'm before ({value})
-      </div>
-    );
-  },
-  afterDecorationComponent: ({ value }: { value: number }) => {
-    return (
-      <div
-        css={css`
-          position: absolute;
-          top: 16px;
-          right: 16px;
-        `}
-      >
-        Hey I'm after ({value})
-      </div>
-    );
-  },
-  handleStyle: {
-    background: 'transparent',
-    // width: 36,
-    // height: 36,
-    borderRadius: '100%',
-    boxShadow: 'inset 0 0 0px 2px white',
-    '&:hover': {
-      background: 'rgba(255, 255, 255, .25)',
-    },
-  },
+export const CustomHandle = () => {
+  return (
+    <ComparisonSwiper
+      defaultValue={50}
+      beforeElement={<div css={{ background: 'tomato' }}></div>}
+      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      aspectRatio={16 / 9}
+      handleComponent={(props) => {
+        return (
+          <div
+            css={css`
+              background: white;
+              width: 48px;
+              height: 48px;
+              border-radius: 100%;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              color: rgba(0, 0, 0, 0.5);
+              cursor: pointer;
+
+              &:hover {
+                color: rgba(0, 0, 0, 1);
+              }
+            `}
+            ref={props.forwardedRef}
+            {...props}
+          >
+            <BiMoveHorizontal size={24} />
+          </div>
+        );
+      }}
+    />
+  );
+};
+
+export const CustomHandleDecorations = () => {
+  return (
+    <ComparisonSwiper
+      defaultValue={50}
+      beforeElement={<div css={{ background: 'tomato' }}></div>}
+      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      aspectRatio={16 / 9}
+      handleDecorationComponent={({ value }) => {
+        return (
+          <Fragment>
+            <div
+              css={css`
+                position: absolute;
+                width: 2px;
+                background: white;
+                z-index: 10;
+                pointer-events: none;
+              `}
+              style={{
+                left: `calc(${value}% - 1px)`,
+                height: `calc(50% - 0px)`,
+              }}
+            ></div>
+            <div
+              css={css`
+                position: absolute;
+                bottom: 0;
+                width: 2px;
+                background: white;
+                z-index: 10;
+                pointer-events: none;
+              `}
+              style={{
+                left: `calc(${value}% - 1px)`,
+                height: `calc(50% - 0px)`,
+              }}
+            ></div>
+          </Fragment>
+        );
+      }}
+    />
+  );
+};
+
+export const CustomElementDecorations = () => {
+  return (
+    <ComparisonSwiper
+      defaultValue={50}
+      beforeElement={<div css={{ background: 'tomato' }}></div>}
+      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeDecorationComponent={({ value }) => (
+        <div
+          css={css`
+            position: absolute;
+            left: 16px;
+            top: 16px;
+            background: black;
+            color: white;
+            padding: 8px;
+          `}
+        >
+          Before ({value}%)
+        </div>
+      )}
+      afterDecorationComponent={({ value }) => (
+        <div
+          css={css`
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            background: black;
+            color: white;
+            padding: 8px;
+          `}
+        >
+          After ({value}%)
+        </div>
+      )}
+      handleDecorationComponent={() => null}
+      aspectRatio={16 / 9}
+    />
+  );
 };

@@ -1,30 +1,45 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css, CSSObject } from '@emotion/react';
-import React, { FC } from 'react';
+import React, { FC, forwardRef } from 'react';
 import {
   SliderInput,
   SliderTrack,
   SliderRange,
   SliderHandle,
+  SliderHandleProps,
 } from '@reach/slider';
 import '@reach/slider/styles.css';
 
 interface DecorationRenderProps {
   value: number;
 }
+interface CustomSliderHandleProps extends SliderHandleProps {
+  forwardedRef?: any;
+}
 
-export interface Props {
+interface ComparisonSwiperCommonProps {
   beforeElement: React.ReactNode;
   afterElement: React.ReactNode;
   aspectRatio: number | string;
-  initialValue?: number;
   handleStyle?: CSSObject;
-  handleClass: string;
+  handleClass?: string;
   handleDecorationComponent?: React.FC<DecorationRenderProps>;
   beforeDecorationComponent?: React.FC<DecorationRenderProps>;
   afterDecorationComponent?: React.FC<DecorationRenderProps>;
+  handleComponent?: React.FC<CustomSliderHandleProps>;
 }
+
+type ComparisonSwiperStatefulProps =
+  | { defaultValue: number; value?: never; onValueChange?: never }
+  | {
+      value: number;
+      onValueChange: (value: number) => void;
+      defaultValue?: never;
+    };
+
+export type ComparisonSwiperProps = ComparisonSwiperStatefulProps &
+  ComparisonSwiperCommonProps;
 
 const aspectRatioRegex = new RegExp(/(\d+)(:|x)(\d+)/);
 
@@ -58,10 +73,32 @@ const elementStyle = css`
   right: 0;
   bottom: 0;
 
-  > * {
+  *:first-child {
     height: 100%;
   }
 `;
+
+const DefaultHandleComponent = (props: CustomSliderHandleProps) => {
+  return (
+    <div
+      {...props}
+      ref={props.forwardedRef}
+      css={css`
+        width: 16px;
+        height: 16px;
+        background: white;
+        border-radius: 100%;
+        border: 1px solid transparent;
+
+        &:focus {
+          outline: none;
+          box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+          border-color: rgba(0, 0, 0, 1);
+        }
+      `}
+    ></div>
+  );
+};
 
 const DefaultHandleDecorationComponent = (props: DecorationRenderProps) => {
   const { value } = props;
@@ -93,24 +130,46 @@ const DefaultHandleDecorationComponent = (props: DecorationRenderProps) => {
   );
 };
 
-export const Thing: FC<Props> = ({
+export const ComparisonSwiper: FC<ComparisonSwiperProps> = ({
   beforeElement,
   afterElement,
   aspectRatio,
-  initialValue = 50,
-  handleStyle = {},
-  handleClass = '',
+  defaultValue,
+  value,
   handleDecorationComponent = DefaultHandleDecorationComponent,
+  handleComponent = DefaultHandleComponent,
   beforeDecorationComponent = () => null,
   afterDecorationComponent = () => null,
+  onValueChange = () => {},
 }) => {
-  const [value, setValue] = React.useState(initialValue);
+  const [localValue, setLocalValue] = React.useState(defaultValue);
+  const isControlled =
+    typeof defaultValue === 'undefined' && typeof value !== 'undefined';
+
+  const sliderValue = (isControlled ? value : localValue) as number;
+
   const padding = calculateAspectRatio(aspectRatio);
-  const clipPath = `polygon(${value}% 0, 100% 0%, 100% 100%, ${value}% 100%)`;
+  const clipPath = `polygon(${sliderValue}% 0, 100% 0%, 100% 100%, ${sliderValue}% 100%)`;
 
   const HandleDecorationComponent = handleDecorationComponent;
   const BeforeDecorationComponent = beforeDecorationComponent;
   const AfterDecorationComponent = afterDecorationComponent;
+  const HandleComponent = handleComponent;
+  const ForwardedHandleComponent = React.useMemo(
+    () =>
+      forwardRef((props, ref) => {
+        return <HandleComponent {...props} forwardedRef={ref} />;
+      }),
+    []
+  );
+
+  const handleChange = (newValue: number) => {
+    if (isControlled) {
+      onValueChange(newValue);
+    } else {
+      setLocalValue(newValue);
+    }
+  };
 
   return (
     <div
@@ -132,20 +191,16 @@ export const Thing: FC<Props> = ({
         [data-reach-slider-range][data-orientation='horizontal'] {
           background: transparent;
         }
-
-        [data-reach-slider-handle] {
-          ${handleStyle}
-        }
       `}
     >
-      <HandleDecorationComponent value={value} />
+      <HandleDecorationComponent value={sliderValue} />
       <div css={elementStyle}>
         {beforeElement}
-        <BeforeDecorationComponent value={value} />
+        <BeforeDecorationComponent value={sliderValue} />
       </div>
       <div css={elementStyle} style={{ clipPath }}>
         {afterElement}
-        <AfterDecorationComponent value={value} />
+        <AfterDecorationComponent value={sliderValue} />
       </div>
       <div
         css={css`
@@ -159,10 +214,15 @@ export const Thing: FC<Props> = ({
           bottom: 0;
         `}
       >
-        <SliderInput min={0} max={100} value={value} onChange={setValue}>
+        <SliderInput
+          min={0}
+          max={100}
+          value={sliderValue}
+          onChange={handleChange}
+        >
           <SliderTrack>
             <SliderRange />
-            <SliderHandle className={handleClass} />
+            <SliderHandle as={ForwardedHandleComponent} />
           </SliderTrack>
         </SliderInput>
       </div>
