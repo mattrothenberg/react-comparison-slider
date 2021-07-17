@@ -184,3 +184,89 @@ export const CustomElementDecorations = () => {
     />
   );
 };
+
+export const WithImages = () => {
+  return (
+    <div
+      css={css`
+        width: 500px;
+        border: 1px solid black;
+      `}
+    >
+      <ComparisonSwiper
+        aspectRatio="4x3"
+        defaultValue={50}
+        handleComponent={(props) => {
+          return (
+            <div
+              css={css`
+                background: black;
+                width: 48px;
+                height: 48px;
+                border-radius: 100%;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                color: rgba(0, 0, 0, 0.5);
+                cursor: pointer;
+
+                &:hover {
+                  color: rgba(0, 0, 0, 1);
+                }
+              `}
+              ref={props.forwardedRef}
+              {...props}
+            >
+              <BiMoveHorizontal color="white" size={24} />
+            </div>
+          );
+        }}
+        handleDecorationComponent={({ value }) => {
+          return (
+            <Fragment>
+              <div
+                css={css`
+                  position: absolute;
+                  width: 2px;
+                  background: black;
+                  z-index: 10;
+                  pointer-events: none;
+                `}
+                style={{
+                  left: `calc(${value}% - 1px)`,
+                  height: `calc(50% - 0px)`,
+                }}
+              ></div>
+              <div
+                css={css`
+                  position: absolute;
+                  bottom: 0;
+                  width: 2px;
+                  background: black;
+                  z-index: 10;
+                  pointer-events: none;
+                `}
+                style={{
+                  left: `calc(${value}% - 1px)`,
+                  height: `calc(50% - 0px)`,
+                }}
+              ></div>
+            </Fragment>
+          );
+        }}
+        beforeElement={
+          <img
+            alt="Converse"
+            src="https://m.media-amazon.com/images/I/71a8uPfldpL._AC_SR1400,1050_.jpg"
+          />
+        }
+        afterElement={
+          <img
+            alt="Converse"
+            src="https://m.media-amazon.com/images/I/91h92SK1tEL._AC_SR1400,1050_.jpg"
+          />
+        }
+      />
+    </div>
+  );
+};
