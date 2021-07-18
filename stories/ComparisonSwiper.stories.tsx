@@ -43,9 +43,6 @@ export const FullyControlled = () => {
       beforeElement={<div css={{ background: 'tomato' }}></div>}
       afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
       aspectRatio={16 / 9}
-      handleStyle={{
-        background: 'white',
-      }}
     />
   );
 };
