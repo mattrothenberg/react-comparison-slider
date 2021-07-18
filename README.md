@@ -9,9 +9,10 @@ React Comparison Slider is a fully customizable component for building bespoke, 
 ## The "Hello World" example
 
 The key ingredients to this component are:
+
 1. An `aspectRatio`, expressed either as a fraction (e.g., `16/9`), or as a string (e.g., `16x9` or `16:9`). Providing an aspect ratio ensures that the before and after "images" (or HTML elements, whatever you decide to provide) line up with one another.
-2. A `beforeElement` of type `React.ReactNode` (read: virtually any valid JSX element) 
-3. An `afterElement` of type `React.ReactNode` (read: virtually any valid JSX element) 
+2. A `beforeComponent` of type `React.ReactNode` (read: virtually any valid JSX element)
+3. An `afterComponent` of type `React.ReactNode` (read: virtually any valid JSX element)
 4. A `defaultValue`, if you'd like to use the component in an uncontrolled fashion
 
 ```tsx
@@ -19,8 +20,8 @@ export const HelloWorldExample = () => {
   return (
     <ComparisonSwiper
       defaultValue={50}
-      beforeElement={<div css={{ background: 'tomato' }}></div>}
-      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<div css={{ background: 'tomato' }}></div>}
+      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
       aspectRatio={16 / 9}
     />
   );
@@ -54,8 +55,8 @@ export const CustomHandleDecorations = () => {
   return (
     <ComparisonSwiper
       defaultValue={50}
-      beforeElement={<div css={{ background: 'tomato' }}></div>}
-      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<div css={{ background: 'tomato' }}></div>}
+      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
       aspectRatio={16 / 9}
       handleDecorationComponent={({ value }) => {
         return (
@@ -98,6 +99,7 @@ export const CustomHandleDecorations = () => {
 <img width="403" alt="Screen Shot 2021-07-17 at 8 39 05 PM" src="https://user-images.githubusercontent.com/5148596/126052297-591f6f3d-481b-47aa-a2c6-fcbea77aa875.png">
 
 ### `beforeDecorationComponent` and `afterDecorationComponent`
+
 Let's say you want to add an indicator to both the "before" and "after" elements themselves. A label makes sense, right? 👇 You can access the current `value` of the slider, should you need that in your visual design.
 
 ```tsx
@@ -105,8 +107,8 @@ export const CustomElementDecorations = () => {
   return (
     <ComparisonSwiper
       defaultValue={50}
-      beforeElement={<div css={{ background: 'tomato' }}></div>}
-      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<div css={{ background: 'tomato' }}></div>}
+      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
       beforeDecorationComponent={({ value }) => (
         <div
           css={css`
@@ -141,6 +143,7 @@ export const CustomElementDecorations = () => {
   );
 };
 ```
+
 <img width="405" alt="Screen Shot 2021-07-17 at 8 41 41 PM" src="https://user-images.githubusercontent.com/5148596/126052338-8908c8d0-6c2b-4eb0-af2a-cd099d69ae43.png">
 
 ### `handleComponent`
@@ -152,8 +155,8 @@ export const CustomHandle = () => {
   return (
     <ComparisonSwiper
       defaultValue={50}
-      beforeElement={<div css={{ background: 'tomato' }}></div>}
-      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<div css={{ background: 'tomato' }}></div>}
+      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
       aspectRatio={16 / 9}
       handleComponent={(props) => {
         return (
@@ -187,10 +190,9 @@ export const CustomHandle = () => {
 
 <img width="409" alt="Screen Shot 2021-07-17 at 8 45 08 PM" src="https://user-images.githubusercontent.com/5148596/126052376-c48c9800-7297-4124-b6ad-f269ba2353a9.png">
 
-
 ## The API
 
-Below is a high-level interface definition for the component. Note that because this component can be used in both a controlled and uncontrolled fashion, the first three props – `value`, `defaultValue`, and `onChange` are actually totally dynamic. That is to say, if you provide a `defaultValue` you won't be asked for `value` or `onChange`. In fact, you'll get a compilation error if you try to use them. Conversely, if you provide `value` and `onChange`, you won't be asked for `defaultValue` and will error out accordingly if you provide it. 
+Below is a high-level interface definition for the component. Note that because this component can be used in both a controlled and uncontrolled fashion, the first three props – `value`, `defaultValue`, and `onChange` are actually totally dynamic. That is to say, if you provide a `defaultValue` you won't be asked for `value` or `onChange`. In fact, you'll get a compilation error if you try to use them. Conversely, if you provide `value` and `onChange`, you won't be asked for `defaultValue` and will error out accordingly if you provide it.
 
 ```ts
 // SPECIAL
@@ -199,8 +201,8 @@ onValueChange?: (value: number) => void;
 defaultValue?: number;
 // /SPECIAL
 
-beforeElement: React.ReactNode;
-afterElement: React.ReactNode;
+beforeComponent: React.ReactNode;
+afterComponent: React.ReactNode;
 aspectRatio: number | string;
 handleDecorationComponent?: React.FC<DecorationRenderProps>;
 beforeDecorationComponent?: React.FC<DecorationRenderProps>;

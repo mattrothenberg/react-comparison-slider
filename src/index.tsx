@@ -20,8 +20,8 @@ interface CustomSliderHandleProps extends SliderHandleProps {
 }
 
 interface ComparisonSwiperCommonProps {
-  beforeElement: React.ReactNode;
-  afterElement: React.ReactNode;
+  beforeComponent: React.ReactNode;
+  afterComponent: React.ReactNode;
   aspectRatio: number | string;
   handleDecorationComponent?: React.FC<DecorationRenderProps>;
   beforeDecorationComponent?: React.FC<DecorationRenderProps>;
@@ -107,8 +107,8 @@ const DefaultHandleDecorationComponent = (props: DecorationRenderProps) => {
 };
 
 export const ComparisonSwiper: FC<ComparisonSwiperProps> = ({
-  beforeElement,
-  afterElement,
+  beforeComponent,
+  afterComponent,
   aspectRatio,
   defaultValue,
   value,
@@ -171,11 +171,11 @@ export const ComparisonSwiper: FC<ComparisonSwiperProps> = ({
     >
       <HandleDecorationComponent value={sliderValue} />
       <div css={elementStyle}>
-        {beforeElement}
+        {beforeComponent}
         <BeforeDecorationComponent value={sliderValue} />
       </div>
       <div css={elementStyle} style={{ clipPath }}>
-        {afterElement}
+        {afterComponent}
         <AfterDecorationComponent value={sliderValue} />
       </div>
       <div

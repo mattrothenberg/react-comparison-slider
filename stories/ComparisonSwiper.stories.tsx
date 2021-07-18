@@ -16,8 +16,8 @@ export const Default = () => {
   return (
     <ComparisonSwiper
       defaultValue={50}
-      beforeElement={<div css={{ background: 'tomato' }}></div>}
-      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<div css={{ background: 'tomato' }}></div>}
+      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
       aspectRatio={16 / 9}
     />
   );
@@ -27,8 +27,8 @@ export const UncontrolledInitialValue = () => {
   return (
     <ComparisonSwiper
       defaultValue={75}
-      beforeElement={<div css={{ background: 'tomato' }}></div>}
-      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<div css={{ background: 'tomato' }}></div>}
+      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
       aspectRatio={16 / 9}
     />
   );
@@ -40,8 +40,8 @@ export const FullyControlled = () => {
     <ComparisonSwiper
       value={value}
       onValueChange={setValue}
-      beforeElement={<div css={{ background: 'tomato' }}></div>}
-      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<div css={{ background: 'tomato' }}></div>}
+      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
       aspectRatio={16 / 9}
     />
   );
@@ -51,8 +51,8 @@ export const CustomHandle = () => {
   return (
     <ComparisonSwiper
       defaultValue={50}
-      beforeElement={<div css={{ background: 'tomato' }}></div>}
-      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<div css={{ background: 'tomato' }}></div>}
+      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
       aspectRatio={16 / 9}
       handleComponent={(props) => {
         return (
@@ -87,8 +87,8 @@ export const CustomHandleDecorations = () => {
   return (
     <ComparisonSwiper
       defaultValue={50}
-      beforeElement={<div css={{ background: 'tomato' }}></div>}
-      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<div css={{ background: 'tomato' }}></div>}
+      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
       aspectRatio={16 / 9}
       handleDecorationComponent={({ value }) => {
         return (
@@ -96,8 +96,12 @@ export const CustomHandleDecorations = () => {
             <div
               css={css`
                 position: absolute;
-                width: 2px;
-                background: white;
+                width: 4px;
+                background: linear-gradient(
+                  to top,
+                  rgba(255, 255, 255, 1),
+                  rgba(255, 255, 255, 0.2)
+                );
                 z-index: 10;
                 pointer-events: none;
               `}
@@ -110,8 +114,12 @@ export const CustomHandleDecorations = () => {
               css={css`
                 position: absolute;
                 bottom: 0;
-                width: 2px;
-                background: white;
+                width: 4px;
+                background: linear-gradient(
+                  to bottom,
+                  rgba(255, 255, 255, 1),
+                  rgba(255, 255, 255, 0.2)
+                );
                 z-index: 10;
                 pointer-events: none;
               `}
@@ -131,8 +139,8 @@ export const CustomElementDecorations = () => {
   return (
     <ComparisonSwiper
       defaultValue={50}
-      beforeElement={<div css={{ background: 'tomato' }}></div>}
-      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<div css={{ background: 'tomato' }}></div>}
+      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
       beforeDecorationComponent={({ value }) => (
         <div
           css={css`
@@ -236,13 +244,13 @@ export const WithImages = () => {
             </Fragment>
           );
         }}
-        beforeElement={
+        beforeComponent={
           <img
             alt="Converse"
             src="https://m.media-amazon.com/images/I/71a8uPfldpL._AC_SR1400,1050_.jpg"
           />
         }
-        afterElement={
+        afterComponent={
           <img
             alt="Converse"
             src="https://m.media-amazon.com/images/I/91h92SK1tEL._AC_SR1400,1050_.jpg"
@@ -250,5 +258,100 @@ export const WithImages = () => {
         }
       />
     </div>
+  );
+};
+
+const lerp = (x: number, y: number, a: number) => x * (1 - a) + y * a;
+
+function GooglyEye({ value }: { value: number }) {
+  const offset = lerp(-60, 60, value / 100) * -1;
+
+  return (
+    <div
+      css={css`
+        background: white;
+        height: 36px;
+        width: 36px;
+        border: 2px solid black;
+        border-radius: 100%;
+        position: relative;
+      `}
+    >
+      <div
+        css={css`
+          position: absolute;
+          bottom: 0px;
+          left: 0;
+          right: 0;
+          margin: auto;
+          background: black;
+          width: 12px;
+          height: 12px;
+          border-radius: 100%;
+          transform: rotate(${offset}deg);
+          transform-origin: top center;
+        `}
+      ></div>
+    </div>
+  );
+}
+
+export const GooglyEyes = () => {
+  return (
+    <ComparisonSwiper
+      defaultValue={50}
+      beforeComponent={<div css={{ background: 'tomato' }}></div>}
+      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
+      aspectRatio={16 / 9}
+      beforeDecorationComponent={({ value }) => (
+        <div
+          css={css`
+            position: absolute;
+            left: 8px;
+            top: 8px;
+            color: white;
+          `}
+        >
+          <GooglyEye value={value} />
+        </div>
+      )}
+      afterDecorationComponent={({ value }) => (
+        <div
+          css={css`
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            color: white;
+          `}
+        >
+          <GooglyEye value={value} />
+        </div>
+      )}
+      handleComponent={(props) => {
+        return (
+          <div
+            css={css`
+              background: white;
+              width: 48px;
+              height: 48px;
+              border-radius: 100%;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              color: rgba(0, 0, 0, 0.5);
+              cursor: pointer;
+
+              &:hover {
+                color: rgba(0, 0, 0, 1);
+              }
+            `}
+            ref={props.forwardedRef}
+            {...props}
+          >
+            <BiMoveHorizontal size={24} />
+          </div>
+        );
+      }}
+    />
   );
 };
