@@ -10,6 +10,12 @@ React Comparison Slider is a fully customizable component for building bespoke, 
 
 ![ezgif-3-d3d224f0ae64](https://user-images.githubusercontent.com/5148596/126052875-9dd65770-b544-4618-af97-9a8c17fedde9.gif)
 
+## Installation
+
+```
+yarn add react-comparison-slider
+```
+
 ## The "Hello World" example
 
 The key ingredients to this component are:
@@ -20,6 +26,8 @@ The key ingredients to this component are:
 4. A `defaultValue`, if you'd like to use the component in an uncontrolled fashion
 
 ```tsx
+import { ComparisonSlider } from 'react-comparison-slider'
+
 export const HelloWorldExample = () => {
   return (
     <ComparisonSlider
@@ -55,6 +63,8 @@ handleComponent?: React.FC<CustomSliderHandleProps>;
 This is a fairly generic render prop, but since it passes through the current `value` of the slider, it allows you to add visual indicators such as a scrubbing bar to the slider itself. In the example below, we add a thin white bar above and below the handle as shown in the screenshot below.
 
 ```tsx
+import { ComparisonSlider } from 'react-comparison-slider'
+
 export const CustomHandleDecorations = () => {
   return (
     <ComparisonSlider
@@ -115,6 +125,8 @@ export const CustomHandleDecorations = () => {
 Let's say you want to add an indicator to both the "before" and "after" elements themselves. A label makes sense, right? 👇 You can access the current `value` of the slider, should you need that in your visual design.
 
 ```tsx
+import { ComparisonSlider } from 'react-comparison-slider'
+
 export const CustomElementDecorations = () => {
   return (
     <ComparisonSlider
@@ -163,6 +175,8 @@ export const CustomElementDecorations = () => {
 Of course, you can fully style the handle itself. You can make it bigger, add an icon, add fancy shadows... You name it! One caveat that you **must** heed is that you must wrap your component in `React.forwardRef<HTMLDivElement, ComparisonSliderHandleProps>()`. Under the hood, this `ref` is used to ensure that the handle component lines up in the dead center of the viewport. There's likely a better way to do this, and I welcome a PR to this end 😜
 
 ```tsx
+import { ComparisonSlider } from 'react-comparison-slider'
+
 const CustomHandleComponent = forwardRef<
   HTMLDivElement,
   ComparisonSliderHandleProps
