@@ -1,181 +1,209 @@
-# TSDX React w/ Storybook User Guide
+# react-comparison-slider
 
-Congrats! You just saved yourself hours of work by bootstrapping this project with TSDX. Let’s get you oriented with what’s here and how to use it.
+https://react-comparison-slider.vercel.app/
 
-> This TSDX setup is meant for developing React component libraries (not apps!) that can be published to NPM. If you’re looking to build a React-based app, you should use `create-react-app`, `razzle`, `nextjs`, `gatsby`, or `react-static`.
+React Comparison Slider is a fully customizable component for building bespoke, keyboard-accessible "before & after" sliders for the web. You bring the content and the visuals, and it'll handle the heavy lifting.
 
-> If you’re new to TypeScript and React, checkout [this handy cheatsheet](https://github.com/sw-yx/react-typescript-cheatsheet/)
+![ezgif-3-0cbdbb348e5a](https://user-images.githubusercontent.com/5148596/126052111-635805d1-6583-45f2-a9c1-76a154eb39a0.gif)
 
-## Commands
+## The "Hello World" example
 
-TSDX scaffolds your new library inside `/src`, and also sets up a [Parcel-based](https://parceljs.org) playground for it inside `/example`.
+The key ingredients to this component are:
+1. An `aspectRatio`, expressed either as a fraction (e.g., `16/9`), or as a string (e.g., `16x9` or `16:9`). Providing an aspect ratio ensures that the before and after "images" (or HTML elements, whatever you decide to provide) line up with one another.
+2. A `beforeElement` of type `React.ReactNode` (read: virtually any valid JSX element) 
+3. An `afterElement` of type `React.ReactNode` (read: virtually any valid JSX element) 
+4. A `defaultValue`, if you'd like to use the component in an uncontrolled fashion
 
-The recommended workflow is to run TSDX in one terminal:
-
-```bash
-npm start # or yarn start
+```tsx
+export const HelloWorldExample = () => {
+  return (
+    <ComparisonSwiper
+      defaultValue={50}
+      beforeElement={<div css={{ background: 'tomato' }}></div>}
+      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      aspectRatio={16 / 9}
+    />
+  );
+};
 ```
 
-This builds to `/dist` and runs the project in watch mode so any edits you save inside `src` causes a rebuild to `/dist`.
+## Customization
 
-Then run either Storybook or the example playground:
+React Comparison Slider does ship with some **very** lightweight styling, but encourages you to bring your own styling (BYOS)™️. Customization is handled via a set of render props that expose all of the underlying components for your needs. There is a total of 4 of these visual elements
 
-### Storybook
+```ts
+// For adding a vertical "bar" or "scrubber" behind the handle
+handleDecorationComponent?: React.FC<DecorationRenderProps>;
 
-Run inside another terminal:
+// For adding a visual indicator or label on the "before" slide (e.g., the "Before" badge in the GIF above)
+beforeDecorationComponent?: React.FC<DecorationRenderProps>;
 
-```bash
-yarn storybook
+// For adding a visual indicator or label on the "after" slide (e.g., the "After" badge in the GIF above)
+afterDecorationComponent?: React.FC<DecorationRenderProps>;
+
+// For customizing the slider handle itself
+handleComponent?: React.FC<CustomSliderHandleProps>;
 ```
 
-This loads the stories from `./stories`.
+### `handleDecorationComponent`
 
-> NOTE: Stories should reference the components as if using the library, similar to the example playground. This means importing from the root project directory. This has been aliased in the tsconfig and the storybook webpack config as a helper.
+This is a fairly generic render prop, but since it passes through the current `value` of the slider, it allows you to add visual indicators such as a scrubbing bar to the slider itself. In the example below, we add a thin white bar above and below the handle as shown in the screenshot below.
 
-### Example
-
-Then run the example inside another:
-
-```bash
-cd example
-npm i # or yarn to install dependencies
-npm start # or yarn start
+```tsx
+export const CustomHandleDecorations = () => {
+  return (
+    <ComparisonSwiper
+      defaultValue={50}
+      beforeElement={<div css={{ background: 'tomato' }}></div>}
+      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      aspectRatio={16 / 9}
+      handleDecorationComponent={({ value }) => {
+        return (
+          <Fragment>
+            <div
+              css={css`
+                position: absolute;
+                width: 2px;
+                background: white;
+                z-index: 10;
+                pointer-events: none;
+              `}
+              style={{
+                left: `calc(${value}% - 1px)`,
+                height: `calc(50% - 0px)`,
+              }}
+            ></div>
+            <div
+              css={css`
+                position: absolute;
+                bottom: 0;
+                width: 2px;
+                background: white;
+                z-index: 10;
+                pointer-events: none;
+              `}
+              style={{
+                left: `calc(${value}% - 1px)`,
+                height: `calc(50% - 0px)`,
+              }}
+            ></div>
+          </Fragment>
+        );
+      }}
+    />
+  );
+};
 ```
 
-The default example imports and live reloads whatever is in `/dist`, so if you are seeing an out of date component, make sure TSDX is running in watch mode like we recommend above. **No symlinking required**, we use [Parcel's aliasing](https://parceljs.org/module_resolution.html#aliases).
+<img width="403" alt="Screen Shot 2021-07-17 at 8 39 05 PM" src="https://user-images.githubusercontent.com/5148596/126052297-591f6f3d-481b-47aa-a2c6-fcbea77aa875.png">
 
-To do a one-off build, use `npm run build` or `yarn build`.
+### `beforeDecorationComponent` and `afterDecorationComponent`
+Let's say you want to add an indicator to both the "before" and "after" elements themselves. A label makes sense, right? 👇 You can access the current `value` of the slider, should you need that in your visual design.
 
-To run tests, use `npm test` or `yarn test`.
+```tsx
+export const CustomElementDecorations = () => {
+  return (
+    <ComparisonSwiper
+      defaultValue={50}
+      beforeElement={<div css={{ background: 'tomato' }}></div>}
+      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeDecorationComponent={({ value }) => (
+        <div
+          css={css`
+            position: absolute;
+            left: 16px;
+            top: 16px;
+            background: black;
+            color: white;
+            padding: 8px;
+          `}
+        >
+          Before ({value}%)
+        </div>
+      )}
+      afterDecorationComponent={({ value }) => (
+        <div
+          css={css`
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            background: black;
+            color: white;
+            padding: 8px;
+          `}
+        >
+          After ({value}%)
+        </div>
+      )}
+      handleDecorationComponent={() => null}
+      aspectRatio={16 / 9}
+    />
+  );
+};
+```
+<img width="405" alt="Screen Shot 2021-07-17 at 8 41 41 PM" src="https://user-images.githubusercontent.com/5148596/126052338-8908c8d0-6c2b-4eb0-af2a-cd099d69ae43.png">
 
-## Configuration
+### `handleComponent`
 
-Code quality is set up for you with `prettier`, `husky`, and `lint-staged`. Adjust the respective fields in `package.json` accordingly.
+Of course, you can fully style the handle itself. You can make it bigger, add an icon, add fancy shadows... You name it! One caveat that you **must** pay attention to is that you need to manually pass `ref={props.forwardedRef}` to the parent-most element in your custom component. Under the hood, this `ref` is used to ensure that the handle component lines up in the dead center of the viewport. There's likely a better way to do this, and I welcome a PR to this end 😜
 
-### Jest
+```tsx
+export const CustomHandle = () => {
+  return (
+    <ComparisonSwiper
+      defaultValue={50}
+      beforeElement={<div css={{ background: 'tomato' }}></div>}
+      afterElement={<div css={{ background: 'cornflowerblue' }}></div>}
+      aspectRatio={16 / 9}
+      handleComponent={(props) => {
+        return (
+          <div
+            css={css`
+              background: white;
+              width: 48px;
+              height: 48px;
+              border-radius: 100%;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              color: rgba(0, 0, 0, 0.5);
+              cursor: pointer;
 
-Jest tests are set up to run with `npm test` or `yarn test`.
-
-### Bundle analysis
-
-Calculates the real cost of your library using [size-limit](https://github.com/ai/size-limit) with `npm run size` and visulize it with `npm run analyze`.
-
-#### Setup Files
-
-This is the folder structure we set up for you:
-
-```txt
-/example
-  index.html
-  index.tsx       # test your component here in a demo app
-  package.json
-  tsconfig.json
-/src
-  index.tsx       # EDIT THIS
-/test
-  blah.test.tsx   # EDIT THIS
-/stories
-  Thing.stories.tsx # EDIT THIS
-/.storybook
-  main.js
-  preview.js
-.gitignore
-package.json
-README.md         # EDIT THIS
-tsconfig.json
+              &:hover {
+                color: rgba(0, 0, 0, 1);
+              }
+            `}
+            ref={props.forwardedRef}
+            {...props}
+          >
+            <BiMoveHorizontal size={24} />
+          </div>
+        );
+      }}
+    />
+  );
+};
 ```
 
-#### React Testing Library
+<img width="409" alt="Screen Shot 2021-07-17 at 8 45 08 PM" src="https://user-images.githubusercontent.com/5148596/126052376-c48c9800-7297-4124-b6ad-f269ba2353a9.png">
 
-We do not set up `react-testing-library` for you yet, we welcome contributions and documentation on this.
 
-### Rollup
+## The API
 
-TSDX uses [Rollup](https://rollupjs.org) as a bundler and generates multiple rollup configs for various module formats and build settings. See [Optimizations](#optimizations) for details.
+Below is a high-level interface definition for the component. Note that because this component can be used in both a controlled and uncontrolled fashion, the first three props – `value`, `defaultValue`, and `onChange` are actually totally dynamic. That is to say, if you provide a `defaultValue` you won't be asked for `value` or `onChange`. In fact, you'll get a compilation error if you try to use them. Conversely, if you provide `value` and `onChange`, you won't be asked for `defaultValue` and will error out accordingly if you provide it. 
 
-### TypeScript
+```ts
+<!-- SPECIAL! -->
+value?: number;
+onValueChange?: (value: number) => void;
+defaultValue?: number;
+<!-- /SPECIAL! -->
 
-`tsconfig.json` is set up to interpret `dom` and `esnext` types, as well as `react` for `jsx`. Adjust according to your needs.
-
-## Continuous Integration
-
-### GitHub Actions
-
-Two actions are added by default:
-
-- `main` which installs deps w/ cache, lints, tests, and builds on all pushes against a Node and OS matrix
-- `size` which comments cost comparison of your library on every pull request using [size-limit](https://github.com/ai/size-limit)
-
-## Optimizations
-
-Please see the main `tsdx` [optimizations docs](https://github.com/palmerhq/tsdx#optimizations). In particular, know that you can take advantage of development-only optimizations:
-
-```js
-// ./types/index.d.ts
-declare var __DEV__: boolean;
-
-// inside your code...
-if (__DEV__) {
-  console.log('foo');
-}
+beforeElement: React.ReactNode;
+afterElement: React.ReactNode;
+aspectRatio: number | string;
+handleDecorationComponent?: React.FC<DecorationRenderProps>;
+beforeDecorationComponent?: React.FC<DecorationRenderProps>;
+afterDecorationComponent?: React.FC<DecorationRenderProps>;
+handleComponent?: React.FC<CustomSliderHandleProps>;
 ```
-
-You can also choose to install and use [invariant](https://github.com/palmerhq/tsdx#invariant) and [warning](https://github.com/palmerhq/tsdx#warning) functions.
-
-## Module Formats
-
-CJS, ESModules, and UMD module formats are supported.
-
-The appropriate paths are configured in `package.json` and `dist/index.js` accordingly. Please report if any issues are found.
-
-## Deploying the Example Playground
-
-The Playground is just a simple [Parcel](https://parceljs.org) app, you can deploy it anywhere you would normally deploy that. Here are some guidelines for **manually** deploying with the Netlify CLI (`npm i -g netlify-cli`):
-
-```bash
-cd example # if not already in the example folder
-npm run build # builds to dist
-netlify deploy # deploy the dist folder
-```
-
-Alternatively, if you already have a git repo connected, you can set up continuous deployment with Netlify:
-
-```bash
-netlify init
-# build command: yarn build && cd example && yarn && yarn build
-# directory to deploy: example/dist
-# pick yes for netlify.toml
-```
-
-## Named Exports
-
-Per Palmer Group guidelines, [always use named exports.](https://github.com/palmerhq/typescript#exports) Code split inside your React app instead of your React library.
-
-## Including Styles
-
-There are many ways to ship styles, including with CSS-in-JS. TSDX has no opinion on this, configure how you like.
-
-For vanilla CSS, you can include it at the root directory and add it to the `files` section in your `package.json`, so that it can be imported separately by your users and run through their bundler's loader.
-
-## Publishing to NPM
-
-We recommend using [np](https://github.com/sindresorhus/np).
-
-## Usage with Lerna
-
-When creating a new package with TSDX within a project set up with Lerna, you might encounter a `Cannot resolve dependency` error when trying to run the `example` project. To fix that you will need to make changes to the `package.json` file _inside the `example` directory_.
-
-The problem is that due to the nature of how dependencies are installed in Lerna projects, the aliases in the example project's `package.json` might not point to the right place, as those dependencies might have been installed in the root of your Lerna project.
-
-Change the `alias` to point to where those packages are actually installed. This depends on the directory structure of your Lerna project, so the actual path might be different from the diff below.
-
-```diff
-   "alias": {
--    "react": "../node_modules/react",
--    "react-dom": "../node_modules/react-dom"
-+    "react": "../../../node_modules/react",
-+    "react-dom": "../../../node_modules/react-dom"
-   },
-```
-
-An alternative to fixing this problem would be to remove aliases altogether and define the dependencies referenced as aliases as dev dependencies instead. [However, that might cause other problems.](https://github.com/palmerhq/tsdx/issues/64)
