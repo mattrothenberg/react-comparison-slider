@@ -23,6 +23,23 @@ export const Default = () => {
   );
 };
 
+export const CustomAspectRatios = () => {
+  return (
+    <div
+      css={css`
+        width: 400px;
+      `}
+    >
+      <ComparisonSlider
+        defaultValue={50}
+        beforeComponent={<div css={{ background: 'tomato' }}></div>}
+        afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
+        aspectRatio={1}
+      />
+    </div>
+  );
+};
+
 export const UncontrolledInitialValue = () => {
   return (
     <ComparisonSlider
@@ -191,7 +208,30 @@ export const WithImages = () => {
       <ComparisonSlider
         aspectRatio="4x3"
         defaultValue={50}
-        handleComponent={CustomHandleComponent}
+        handleComponent={forwardRef<
+          HTMLDivElement,
+          ComparisonSliderHandleProps
+        >((props, ref) => {
+          return (
+            <div
+              ref={ref}
+              css={css`
+                background: black;
+                width: 48px;
+                height: 48px;
+                border-radius: 100%;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                color: rgba(255, 255, 255, 1);
+                cursor: pointer;
+              `}
+              {...props}
+            >
+              <BiStar size={24} />
+            </div>
+          );
+        })}
         handleDecorationComponent={({ value }) => {
           return (
             <Fragment>
