@@ -3,18 +3,18 @@
 
 import { jsx, css } from '@emotion/react';
 import { Fragment } from 'react';
-import { ComparisonSwiper } from '../src';
+import { ComparisonSlider } from '../src';
 import { useState } from '@storybook/addons';
 import { BiMoveHorizontal, BiStar } from 'react-icons/bi';
 
 export default {
-  title: 'ComparisonSwiper',
-  component: ComparisonSwiper,
+  title: 'ComparisonSlider',
+  component: ComparisonSlider,
 };
 
 export const Default = () => {
   return (
-    <ComparisonSwiper
+    <ComparisonSlider
       defaultValue={50}
       beforeComponent={<div css={{ background: 'tomato' }}></div>}
       afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
@@ -25,7 +25,7 @@ export const Default = () => {
 
 export const UncontrolledInitialValue = () => {
   return (
-    <ComparisonSwiper
+    <ComparisonSlider
       defaultValue={75}
       beforeComponent={<div css={{ background: 'tomato' }}></div>}
       afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
@@ -37,7 +37,7 @@ export const UncontrolledInitialValue = () => {
 export const FullyControlled = () => {
   const [value, setValue] = useState(50);
   return (
-    <ComparisonSwiper
+    <ComparisonSlider
       value={value}
       onValueChange={setValue}
       beforeComponent={<div css={{ background: 'tomato' }}></div>}
@@ -49,7 +49,7 @@ export const FullyControlled = () => {
 
 export const CustomHandle = () => {
   return (
-    <ComparisonSwiper
+    <ComparisonSlider
       defaultValue={50}
       beforeComponent={<div css={{ background: 'tomato' }}></div>}
       afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
@@ -85,7 +85,7 @@ export const CustomHandle = () => {
 
 export const CustomHandleDecorations = () => {
   return (
-    <ComparisonSwiper
+    <ComparisonSlider
       defaultValue={50}
       beforeComponent={<div css={{ background: 'tomato' }}></div>}
       afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
@@ -137,7 +137,7 @@ export const CustomHandleDecorations = () => {
 
 export const CustomElementDecorations = () => {
   return (
-    <ComparisonSwiper
+    <ComparisonSlider
       defaultValue={50}
       beforeComponent={<div css={{ background: 'tomato' }}></div>}
       afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
@@ -183,7 +183,7 @@ export const WithImages = () => {
         border: 2px solid black;
       `}
     >
-      <ComparisonSwiper
+      <ComparisonSlider
         aspectRatio="4x3"
         defaultValue={50}
         handleComponent={(props) => {
@@ -298,7 +298,7 @@ function GooglyEye({ value }: { value: number }) {
 
 export const GooglyEyes = () => {
   return (
-    <ComparisonSwiper
+    <ComparisonSlider
       defaultValue={50}
       beforeComponent={<div css={{ background: 'tomato' }}></div>}
       afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}

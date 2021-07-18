@@ -19,7 +19,7 @@ interface CustomSliderHandleProps extends SliderHandleProps {
   forwardedRef?: any;
 }
 
-interface ComparisonSwiperCommonProps {
+interface ComparisonSliderCommonProps {
   beforeComponent: React.ReactNode;
   afterComponent: React.ReactNode;
   aspectRatio: number | string;
@@ -29,7 +29,7 @@ interface ComparisonSwiperCommonProps {
   handleComponent?: React.FC<CustomSliderHandleProps>;
 }
 
-type ComparisonSwiperStatefulProps =
+type ComparisonSliderStatefulProps =
   | { defaultValue: number; value?: never; onValueChange?: never }
   | {
       value: number;
@@ -37,8 +37,8 @@ type ComparisonSwiperStatefulProps =
       defaultValue?: never;
     };
 
-export type ComparisonSwiperProps = ComparisonSwiperStatefulProps &
-  ComparisonSwiperCommonProps;
+export type ComparisonSliderProps = ComparisonSliderStatefulProps &
+  ComparisonSliderCommonProps;
 
 const elementStyle = css`
   position: absolute;
@@ -106,7 +106,7 @@ const DefaultHandleDecorationComponent = (props: DecorationRenderProps) => {
   );
 };
 
-export const ComparisonSwiper: FC<ComparisonSwiperProps> = ({
+export const ComparisonSlider: FC<ComparisonSliderProps> = ({
   beforeComponent,
   afterComponent,
   aspectRatio,

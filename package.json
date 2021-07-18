@@ -34,16 +34,16 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "react-comparison-swiper",
+  "name": "react-comparison-slider",
   "author": "Matt Rothenberg",
-  "module": "dist/react-comparison-swiper.esm.js",
+  "module": "dist/react-comparison-slider.esm.js",
   "size-limit": [
     {
-      "path": "dist/react-comparison-swiper.cjs.production.min.js",
+      "path": "dist/react-comparison-slider.cjs.production.min.js",
       "limit": "10 KB"
     },
     {
-      "path": "dist/react-comparison-swiper.esm.js",
+      "path": "dist/react-comparison-slider.esm.js",
       "limit": "10 KB"
     }
   ],

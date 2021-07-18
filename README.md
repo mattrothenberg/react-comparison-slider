@@ -8,7 +8,6 @@ React Comparison Slider is a fully customizable component for building bespoke, 
 
 ![ezgif-3-d3d224f0ae64](https://user-images.githubusercontent.com/5148596/126052875-9dd65770-b544-4618-af97-9a8c17fedde9.gif)
 
-
 ## The "Hello World" example
 
 The key ingredients to this component are:
@@ -21,7 +20,7 @@ The key ingredients to this component are:
 ```tsx
 export const HelloWorldExample = () => {
   return (
-    <ComparisonSwiper
+    <ComparisonSlider
       defaultValue={50}
       beforeComponent={<div css={{ background: 'tomato' }}></div>}
       afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
@@ -56,7 +55,7 @@ This is a fairly generic render prop, but since it passes through the current `v
 ```tsx
 export const CustomHandleDecorations = () => {
   return (
-    <ComparisonSwiper
+    <ComparisonSlider
       defaultValue={50}
       beforeComponent={<div css={{ background: 'tomato' }}></div>}
       afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
@@ -109,7 +108,6 @@ export const CustomHandleDecorations = () => {
 
 <img width="543" alt="Screen Shot 2021-07-17 at 9 10 08 PM" src="https://user-images.githubusercontent.com/5148596/126052824-e6cc2745-d14e-4879-b223-90578317e85c.png">
 
-
 ### `beforeDecorationComponent` and `afterDecorationComponent`
 
 Let's say you want to add an indicator to both the "before" and "after" elements themselves. A label makes sense, right? 👇 You can access the current `value` of the slider, should you need that in your visual design.
@@ -117,7 +115,7 @@ Let's say you want to add an indicator to both the "before" and "after" elements
 ```tsx
 export const CustomElementDecorations = () => {
   return (
-    <ComparisonSwiper
+    <ComparisonSlider
       defaultValue={50}
       beforeComponent={<div css={{ background: 'tomato' }}></div>}
       afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
@@ -165,7 +163,7 @@ Of course, you can fully style the handle itself. You can make it bigger, add an
 ```tsx
 export const CustomHandle = () => {
   return (
-    <ComparisonSwiper
+    <ComparisonSlider
       defaultValue={50}
       beforeComponent={<div css={{ background: 'tomato' }}></div>}
       afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
