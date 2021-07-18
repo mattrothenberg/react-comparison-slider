@@ -113,14 +113,6 @@ const DefaultHandleDecorationComponent = (props: DecorationRenderProps) => {
   );
 };
 
-const Slide: React.FC<{ clipPath: string }> = ({ children, clipPath }) => {
-  return (
-    <div css={elementStyle} style={{ clipPath }}>
-      {children}
-    </div>
-  );
-};
-
 export const ComparisonSlider: FC<ComparisonSliderProps> = ({
   beforeComponent,
   afterComponent,
@@ -168,23 +160,16 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
     }
   };
 
-  const baseSlides = React.useMemo(
-    () => [
-      ({ clip }: { clip: string }) => (
-        <Slide clipPath={clip}>
-          {beforeComponent}
-          <BeforeDecorationComponent value={sliderValue} />
-        </Slide>
-      ),
-      ({ clip }: { clip: string }) => (
-        <Slide clipPath={clip}>
-          {afterComponent}
-          <AfterDecorationComponent value={sliderValue} />
-        </Slide>
-      ),
-    ],
-    [sliderValue]
-  );
+  const baseSlides = [
+    <React.Fragment>
+      {beforeComponent}
+      <BeforeDecorationComponent value={sliderValue} />
+    </React.Fragment>,
+    <React.Fragment>
+      {afterComponent}
+      <AfterDecorationComponent value={sliderValue} />
+    </React.Fragment>,
+  ];
 
   const slides =
     orientation === 'horizontal' ? baseSlides : baseSlides.reverse();
@@ -204,29 +189,6 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
           max-width: 100%;
         }
 
-        [data-reach-slider-input][data-orientation='horizontal'] {
-          height: 0.5rem;
-        }
-
-        [data-reach-slider-input][data-orientation='vertical'] {
-          width: 0.5rem;
-          /* the height is somewhat arbitrary but necessary for vertical sliders for
-          basic functionality */
-          height: 250px;
-          max-height: 100%;
-        }
-
-        [data-reach-slider-input][data-disabled] {
-          opacity: 0.5;
-          pointer-events: none;
-        }
-
-        [data-reach-slider-track] {
-          position: relative;
-          border-radius: 0.25rem;
-          background: hsl(0, 0%, 95%);
-        }
-
         [data-reach-slider-track][data-orientation='horizontal'] {
           width: 100%;
           height: inherit;
@@ -244,20 +206,6 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
           position: absolute;
         }
 
-        [data-reach-slider-track][data-orientation='horizontal']::before {
-          width: 100%;
-          height: 1.5rem;
-          top: calc(-0.5rem - 1px);
-          left: 0;
-        }
-
-        [data-reach-slider-track][data-orientation='vertical']::before {
-          width: 1.5rem;
-          height: 100%;
-          top: 0;
-          left: calc(-0.5rem - 1px);
-        }
-
         [data-reach-slider-handle][aria-orientation='horizontal'] {
           top: 50%;
           transform: translateY(-50%);
@@ -272,58 +220,11 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
           transform: translateX(-50%);
         }
 
-        [data-reach-slider-range] {
-          border-radius: inherit;
-          background: #1159a6;
-          left: 0;
-          bottom: 0;
-        }
-
         [data-reach-slider-range][data-orientation='horizontal'] {
           height: 100%;
         }
 
         [data-reach-slider-range][data-orientation='vertical'] {
-          width: 100%;
-        }
-
-        [data-reach-slider-marker] {
-          background: hsl(0, 0%, 50%);
-          transform-origin: center;
-        }
-
-        [data-reach-slider-marker][data-orientation='horizontal'] {
-          top: 50%;
-          transform: translate(-50%, -50%);
-          width: 3px;
-          height: 0.75rem;
-        }
-
-        [data-reach-slider-marker][data-orientation='vertical'] {
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 0.75rem;
-          height: 3px;
-        }
-
-        [data-reach-slider-marker][data-state='at-value'],
-        [data-reach-slider-marker][data-state='under-value'] {
-          /* */
-        }
-
-        /* TODO: Remove in 1.0 */
-        [data-reach-slider-track-highlight] {
-          border-radius: inherit;
-          background: #1159a6;
-          left: 0;
-          bottom: 0;
-        }
-
-        [data-reach-slider-track-highlight][data-orientation='horizontal'] {
-          height: 100%;
-        }
-
-        [data-reach-slider-track-highlight][data-orientation='vertical'] {
           width: 100%;
         }
 
@@ -355,11 +256,15 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
       <HandleDecorationComponent value={sliderValue} />
 
       <React.Fragment>
-        {slides.map((SlideEl, index) => {
+        {slides.map((content, index) => {
           return (
-            <React.Fragment key={index}>
-              <SlideEl clip={index === 1 ? clipPath : ''} />
-            </React.Fragment>
+            <div
+              css={elementStyle}
+              style={{ clipPath: index === 1 ? clipPath : '' }}
+              key={index}
+            >
+              {content}
+            </div>
           );
         })}
       </React.Fragment>

@@ -353,11 +353,29 @@ export const GooglyEyes = () => {
   );
 };
 
+const images = [
+  [
+    'https://m.media-amazon.com/images/I/71a8uPfldpL._AC_SR1400,1050_.jpg',
+    'https://m.media-amazon.com/images/I/91h92SK1tEL._AC_SR1400,1050_.jpg',
+  ],
+  [
+    'https://nyc3.digitaloceanspaces.com/bia/2020/05/Cobble-Hill-Kitchen-Before-1024x683.jpg',
+    'https://nyc3.digitaloceanspaces.com/bia/2020/05/baltic-st-kitchen-2-1024x683.jpg',
+  ],
+];
+
 export const Vertical = () => {
   const [value, setValue] = useState(50);
+  const [imageIndex, setImageIndex] = useState(0);
+
+  const handleCycleImages = () => {
+    setImageIndex((currIndex) => (currIndex + 1) % images.length);
+  };
 
   return (
     <Fragment>
+      <button onClick={handleCycleImages}>Cycle Images</button>
+      {imageIndex}
       <div
         css={css`
           border: 2px solid black;
@@ -374,7 +392,7 @@ export const Vertical = () => {
                 object-fit: cover;
               `}
               alt="Converse"
-              src="https://m.media-amazon.com/images/I/71a8uPfldpL._AC_SR1400,1050_.jpg"
+              src={images[imageIndex][0]}
             />
           }
           afterComponent={
@@ -384,7 +402,7 @@ export const Vertical = () => {
                 object-fit: cover;
               `}
               alt="Converse"
-              src="https://m.media-amazon.com/images/I/91h92SK1tEL._AC_SR1400,1050_.jpg"
+              src={images[imageIndex][1]}
             />
           }
           handleDecorationComponent={({ value }) => (
