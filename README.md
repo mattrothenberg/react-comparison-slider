@@ -6,6 +6,9 @@ React Comparison Slider is a fully customizable component for building bespoke, 
 
 ![ezgif-3-0cbdbb348e5a](https://user-images.githubusercontent.com/5148596/126052111-635805d1-6583-45f2-a9c1-76a154eb39a0.gif)
 
+![ezgif-3-d3d224f0ae64](https://user-images.githubusercontent.com/5148596/126052875-9dd65770-b544-4618-af97-9a8c17fedde9.gif)
+
+
 ## The "Hello World" example
 
 The key ingredients to this component are:
@@ -64,8 +67,12 @@ export const CustomHandleDecorations = () => {
             <div
               css={css`
                 position: absolute;
-                width: 2px;
-                background: white;
+                width: 4px;
+                background: linear-gradient(
+                  to top,
+                  rgba(255, 255, 255, 1),
+                  rgba(255, 255, 255, 0.2)
+                );
                 z-index: 10;
                 pointer-events: none;
               `}
@@ -78,8 +85,12 @@ export const CustomHandleDecorations = () => {
               css={css`
                 position: absolute;
                 bottom: 0;
-                width: 2px;
-                background: white;
+                width: 4px;
+                background: linear-gradient(
+                  to bottom,
+                  rgba(255, 255, 255, 1),
+                  rgba(255, 255, 255, 0.2)
+                );
                 z-index: 10;
                 pointer-events: none;
               `}
@@ -96,7 +107,8 @@ export const CustomHandleDecorations = () => {
 };
 ```
 
-<img width="403" alt="Screen Shot 2021-07-17 at 8 39 05 PM" src="https://user-images.githubusercontent.com/5148596/126052297-591f6f3d-481b-47aa-a2c6-fcbea77aa875.png">
+<img width="543" alt="Screen Shot 2021-07-17 at 9 10 08 PM" src="https://user-images.githubusercontent.com/5148596/126052824-e6cc2745-d14e-4879-b223-90578317e85c.png">
+
 
 ### `beforeDecorationComponent` and `afterDecorationComponent`
 
