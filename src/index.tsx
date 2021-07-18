@@ -15,9 +15,9 @@ import { calculateAspectRatio } from './util';
 interface DecorationRenderProps {
   value: number;
 }
-interface CustomSliderHandleProps extends SliderHandleProps {
-  forwardedRef?: any;
-}
+
+export type ComparisonSliderProps = ComparisonSliderStatefulProps &
+  ComparisonSliderCommonProps;
 
 interface ComparisonSliderCommonProps {
   beforeComponent: React.ReactNode;
@@ -26,7 +26,7 @@ interface ComparisonSliderCommonProps {
   handleDecorationComponent?: React.FC<DecorationRenderProps>;
   beforeDecorationComponent?: React.FC<DecorationRenderProps>;
   afterDecorationComponent?: React.FC<DecorationRenderProps>;
-  handleComponent?: React.FC<CustomSliderHandleProps>;
+  handleComponent?: React.FC<ComparisonSliderHandleProps>;
 }
 
 type ComparisonSliderStatefulProps =
@@ -37,8 +37,7 @@ type ComparisonSliderStatefulProps =
       defaultValue?: never;
     };
 
-export type ComparisonSliderProps = ComparisonSliderStatefulProps &
-  ComparisonSliderCommonProps;
+export type ComparisonSliderHandleProps = SliderHandleProps;
 
 const elementStyle = css`
   position: absolute;
@@ -49,16 +48,23 @@ const elementStyle = css`
   right: 0;
   bottom: 0;
 
-  *:first-child {
+  > * {
     height: 100%;
+  }
+
+  > *:not(style) + * {
+    height: unset;
   }
 `;
 
-const DefaultHandleComponent = (props: CustomSliderHandleProps) => {
+const DefaultHandleComponent = forwardRef<
+  HTMLDivElement,
+  ComparisonSliderHandleProps
+>((props, ref) => {
   return (
     <div
       {...props}
-      ref={props.forwardedRef}
+      ref={ref}
       css={css`
         width: 16px;
         height: 16px;
@@ -74,7 +80,7 @@ const DefaultHandleComponent = (props: CustomSliderHandleProps) => {
       `}
     ></div>
   );
-};
+});
 
 const DefaultHandleDecorationComponent = (props: DecorationRenderProps) => {
   const { value } = props;
@@ -133,8 +139,8 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
   const HandleComponent = handleComponent;
   const ForwardedHandleComponent = React.useMemo(
     () =>
-      forwardRef((props, ref) => {
-        return <HandleComponent {...props} forwardedRef={ref} />;
+      forwardRef<HTMLDivElement, ComparisonSliderHandleProps>((props, ref) => {
+        return <HandleComponent {...props} ref={ref} />;
       }),
     []
   );

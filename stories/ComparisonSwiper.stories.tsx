@@ -2,8 +2,8 @@
 /** @jsx jsx */
 
 import { jsx, css } from '@emotion/react';
-import { Fragment } from 'react';
-import { ComparisonSlider } from '../src';
+import { forwardRef, Fragment } from 'react';
+import { ComparisonSlider, ComparisonSliderHandleProps } from '../src';
 import { useState } from '@storybook/addons';
 import { BiMoveHorizontal, BiStar } from 'react-icons/bi';
 
@@ -47,6 +47,35 @@ export const FullyControlled = () => {
   );
 };
 
+const CustomHandleComponent = forwardRef<
+  HTMLDivElement,
+  ComparisonSliderHandleProps
+>((props, ref) => {
+  return (
+    <div
+      ref={ref}
+      css={css`
+        background: white;
+        width: 48px;
+        height: 48px;
+        border-radius: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+
+        &:hover {
+          color: rgba(0, 0, 0, 1);
+        }
+      `}
+      {...props}
+    >
+      <BiMoveHorizontal size={24} />
+    </div>
+  );
+});
+
 export const CustomHandle = () => {
   return (
     <ComparisonSlider
@@ -54,31 +83,7 @@ export const CustomHandle = () => {
       beforeComponent={<div css={{ background: 'tomato' }}></div>}
       afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
       aspectRatio={16 / 9}
-      handleComponent={(props) => {
-        return (
-          <div
-            css={css`
-              background: white;
-              width: 48px;
-              height: 48px;
-              border-radius: 100%;
-              display: inline-flex;
-              align-items: center;
-              justify-content: center;
-              color: rgba(0, 0, 0, 0.5);
-              cursor: pointer;
-
-              &:hover {
-                color: rgba(0, 0, 0, 1);
-              }
-            `}
-            ref={props.forwardedRef}
-            {...props}
-          >
-            <BiMoveHorizontal size={24} />
-          </div>
-        );
-      }}
+      handleComponent={CustomHandleComponent}
     />
   );
 };
@@ -186,31 +191,7 @@ export const WithImages = () => {
       <ComparisonSlider
         aspectRatio="4x3"
         defaultValue={50}
-        handleComponent={(props) => {
-          return (
-            <div
-              css={css`
-                background: black;
-                width: 48px;
-                height: 48px;
-                border-radius: 100%;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                color: rgba(0, 0, 0, 0.5);
-                cursor: pointer;
-
-                &:hover {
-                  color: rgba(0, 0, 0, 1);
-                }
-              `}
-              ref={props.forwardedRef}
-              {...props}
-            >
-              <BiStar color="white" size={24} />
-            </div>
-          );
-        }}
+        handleComponent={CustomHandleComponent}
         handleDecorationComponent={({ value }) => {
           return (
             <Fragment>
@@ -327,31 +308,7 @@ export const GooglyEyes = () => {
           <GooglyEye value={value} />
         </div>
       )}
-      handleComponent={(props) => {
-        return (
-          <div
-            css={css`
-              background: white;
-              width: 48px;
-              height: 48px;
-              border-radius: 100%;
-              display: inline-flex;
-              align-items: center;
-              justify-content: center;
-              color: rgba(0, 0, 0, 0.5);
-              cursor: pointer;
-
-              &:hover {
-                color: rgba(0, 0, 0, 1);
-              }
-            `}
-            ref={props.forwardedRef}
-            {...props}
-          >
-            <BiMoveHorizontal size={24} />
-          </div>
-        );
-      }}
+      handleComponent={CustomHandleComponent}
     />
   );
 };

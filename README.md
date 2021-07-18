@@ -158,9 +158,38 @@ export const CustomElementDecorations = () => {
 
 ### `handleComponent`
 
-Of course, you can fully style the handle itself. You can make it bigger, add an icon, add fancy shadows... You name it! One caveat that you **must** pay attention to is that you need to manually pass `ref={props.forwardedRef}` to the parent-most element in your custom component. Under the hood, this `ref` is used to ensure that the handle component lines up in the dead center of the viewport. There's likely a better way to do this, and I welcome a PR to this end 😜
+Of course, you can fully style the handle itself. You can make it bigger, add an icon, add fancy shadows... You name it! One caveat that you **must** heed is that you must wrap your component in `React.forwardRef<HTMLDivElement, ComparisonSliderHandleProps>()`. Under the hood, this `ref` is used to ensure that the handle component lines up in the dead center of the viewport. There's likely a better way to do this, and I welcome a PR to this end 😜
 
 ```tsx
+const CustomHandleComponent = forwardRef<
+  HTMLDivElement,
+  ComparisonSliderHandleProps
+>((props, ref) => {
+  return (
+    <div
+      ref={ref}
+      css={css`
+        background: white;
+        width: 48px;
+        height: 48px;
+        border-radius: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+
+        &:hover {
+          color: rgba(0, 0, 0, 1);
+        }
+      `}
+      {...props}
+    >
+      <BiMoveHorizontal size={24} />
+    </div>
+  );
+});
+
 export const CustomHandle = () => {
   return (
     <ComparisonSlider
@@ -168,31 +197,7 @@ export const CustomHandle = () => {
       beforeComponent={<div css={{ background: 'tomato' }}></div>}
       afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
       aspectRatio={16 / 9}
-      handleComponent={(props) => {
-        return (
-          <div
-            css={css`
-              background: white;
-              width: 48px;
-              height: 48px;
-              border-radius: 100%;
-              display: inline-flex;
-              align-items: center;
-              justify-content: center;
-              color: rgba(0, 0, 0, 0.5);
-              cursor: pointer;
-
-              &:hover {
-                color: rgba(0, 0, 0, 1);
-              }
-            `}
-            ref={props.forwardedRef}
-            {...props}
-          >
-            <BiMoveHorizontal size={24} />
-          </div>
-        );
-      }}
+      handleComponent={CustomHandleComponent}
     />
   );
 };
