@@ -1,6 +1,6 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { jsx, css, CSSObject } from '@emotion/react';
+import { jsx, css } from '@emotion/react';
 import React, { FC, forwardRef } from 'react';
 import {
   SliderInput,
@@ -23,8 +23,6 @@ interface ComparisonSwiperCommonProps {
   beforeElement: React.ReactNode;
   afterElement: React.ReactNode;
   aspectRatio: number | string;
-  handleStyle?: CSSObject;
-  handleClass?: string;
   handleDecorationComponent?: React.FC<DecorationRenderProps>;
   beforeDecorationComponent?: React.FC<DecorationRenderProps>;
   afterDecorationComponent?: React.FC<DecorationRenderProps>;
