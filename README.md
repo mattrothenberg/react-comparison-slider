@@ -193,11 +193,11 @@ export const CustomHandle = () => {
 Below is a high-level interface definition for the component. Note that because this component can be used in both a controlled and uncontrolled fashion, the first three props – `value`, `defaultValue`, and `onChange` are actually totally dynamic. That is to say, if you provide a `defaultValue` you won't be asked for `value` or `onChange`. In fact, you'll get a compilation error if you try to use them. Conversely, if you provide `value` and `onChange`, you won't be asked for `defaultValue` and will error out accordingly if you provide it. 
 
 ```ts
-<!-- SPECIAL! -->
+// SPECIAL
 value?: number;
 onValueChange?: (value: number) => void;
 defaultValue?: number;
-<!-- /SPECIAL! -->
+// /SPECIAL
 
 beforeElement: React.ReactNode;
 afterElement: React.ReactNode;
