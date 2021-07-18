@@ -1,5 +1,7 @@
 # react-comparison-slider
 
+[![npm version](https://badge.fury.io/js/react-comparison-slider.svg)](https://badge.fury.io/js/react-comparison-slider)
+
 https://react-comparison-slider.vercel.app/
 
 React Comparison Slider is a fully customizable component for building bespoke, keyboard-accessible "before & after" sliders for the web. You bring the content and the visuals, and it'll handle the heavy lifting.
