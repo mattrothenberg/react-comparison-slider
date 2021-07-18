@@ -27,6 +27,7 @@ interface ComparisonSliderCommonProps {
   beforeDecorationComponent?: React.FC<DecorationRenderProps>;
   afterDecorationComponent?: React.FC<DecorationRenderProps>;
   handleComponent?: React.FC<ComparisonSliderHandleProps>;
+  orientation?: 'vertical' | 'horizontal';
 }
 
 type ComparisonSliderStatefulProps =
@@ -122,6 +123,7 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
   handleComponent = DefaultHandleComponent,
   beforeDecorationComponent = () => null,
   afterDecorationComponent = () => null,
+  orientation = 'horizontal',
   onValueChange = () => {},
 }) => {
   const [localValue, setLocalValue] = React.useState(defaultValue);
@@ -131,7 +133,12 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
   const sliderValue = (isControlled ? value : localValue) as number;
 
   const padding = calculateAspectRatio(aspectRatio);
-  const clipPath = `polygon(${sliderValue}% 0, 100% 0%, 100% 100%, ${sliderValue}% 100%)`;
+  const clipPath =
+    orientation === 'horizontal'
+      ? `polygon(${sliderValue}% 0, 100% 0%, 100% 100%, ${sliderValue}% 100%)`
+      : `polygon(0% 100%, 0% ${100 - sliderValue}%, 100% ${
+          100 - sliderValue
+        }%, 100% 100%)`;
 
   const HandleDecorationComponent = handleDecorationComponent;
   const BeforeDecorationComponent = beforeDecorationComponent;
@@ -300,20 +307,47 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
           height: 100% !important;
         }
 
-        [data-reach-slider-range][data-orientation='horizontal'] {
-          background: transparent;
+        [data-reach-slider-range][data-orientation='horizontal'],
+        [data-reach-slider-range][data-orientation='vertical'] {
+          background: transparent !important;
+        }
+
+        [data-reach-slider-input][data-orientation='vertical'] {
+          width: 100% !important;
+          height: 100% !important;
+          background: transparent !important;
+        }
+
+        [data-reach-slider-track][data-orientation='vertical'] {
+          background: transparent !important;
         }
       `}
     >
       <HandleDecorationComponent value={sliderValue} />
-      <div css={elementStyle}>
-        {beforeComponent}
-        <BeforeDecorationComponent value={sliderValue} />
-      </div>
-      <div css={elementStyle} style={{ clipPath }}>
-        {afterComponent}
-        <AfterDecorationComponent value={sliderValue} />
-      </div>
+      {orientation === 'horizontal' && (
+        <React.Fragment>
+          <div css={elementStyle}>
+            {beforeComponent}
+            <BeforeDecorationComponent value={sliderValue} />
+          </div>
+          <div css={elementStyle} style={{ clipPath }}>
+            {afterComponent}
+            <AfterDecorationComponent value={sliderValue} />
+          </div>
+        </React.Fragment>
+      )}
+      {orientation === 'vertical' && (
+        <React.Fragment>
+          <div css={elementStyle}>
+            {afterComponent}
+            <AfterDecorationComponent value={sliderValue} />
+          </div>
+          <div css={elementStyle} style={{ clipPath }}>
+            {beforeComponent}
+            <BeforeDecorationComponent value={sliderValue} />
+          </div>
+        </React.Fragment>
+      )}
       <div
         css={css`
           position: absolute;
@@ -331,6 +365,8 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
           max={100}
           value={sliderValue}
           onChange={handleChange}
+          // @ts-ignore
+          orientation={orientation}
         >
           <SliderTrack>
             <SliderRange />

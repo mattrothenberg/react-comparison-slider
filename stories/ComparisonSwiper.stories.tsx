@@ -2,9 +2,8 @@
 /** @jsx jsx */
 
 import { jsx, css } from '@emotion/react';
-import { forwardRef, Fragment } from 'react';
+import React, { forwardRef, Fragment, useState } from 'react';
 import { ComparisonSlider, ComparisonSliderHandleProps } from '../src';
-import { useState } from '@storybook/addons';
 import { BiMoveHorizontal, BiStar } from 'react-icons/bi';
 
 export default {
@@ -63,6 +62,30 @@ export const FullyControlled = () => {
     />
   );
 };
+
+const ConverseHandle = forwardRef<HTMLDivElement, ComparisonSliderHandleProps>(
+  (props, ref) => {
+    return (
+      <div
+        ref={ref}
+        css={css`
+          background: black;
+          width: 48px;
+          height: 48px;
+          border-radius: 100%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          color: rgba(255, 255, 255, 1);
+          cursor: pointer;
+        `}
+        {...props}
+      >
+        <BiStar size={24} />
+      </div>
+    );
+  }
+);
 
 const CustomHandleComponent = forwardRef<
   HTMLDivElement,
@@ -208,30 +231,7 @@ export const WithImages = () => {
       <ComparisonSlider
         aspectRatio="4x3"
         defaultValue={50}
-        handleComponent={forwardRef<
-          HTMLDivElement,
-          ComparisonSliderHandleProps
-        >((props, ref) => {
-          return (
-            <div
-              ref={ref}
-              css={css`
-                background: black;
-                width: 48px;
-                height: 48px;
-                border-radius: 100%;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                color: rgba(255, 255, 255, 1);
-                cursor: pointer;
-              `}
-              {...props}
-            >
-              <BiStar size={24} />
-            </div>
-          );
-        })}
+        handleComponent={ConverseHandle}
         handleDecorationComponent={({ value }) => {
           return (
             <Fragment>
@@ -350,5 +350,63 @@ export const GooglyEyes = () => {
       )}
       handleComponent={CustomHandleComponent}
     />
+  );
+};
+
+export const Vertical = () => {
+  const [value, setValue] = useState(50);
+
+  return (
+    <Fragment>
+      <div
+        css={css`
+          border: 2px solid black;
+        `}
+      >
+        <ComparisonSlider
+          value={value}
+          onValueChange={setValue}
+          orientation="vertical"
+          beforeComponent={
+            <img
+              css={css`
+                width: 100%;
+                object-fit: cover;
+              `}
+              alt="Converse"
+              src="https://m.media-amazon.com/images/I/71a8uPfldpL._AC_SR1400,1050_.jpg"
+            />
+          }
+          afterComponent={
+            <img
+              css={css`
+                width: 100%;
+                object-fit: cover;
+              `}
+              alt="Converse"
+              src="https://m.media-amazon.com/images/I/91h92SK1tEL._AC_SR1400,1050_.jpg"
+            />
+          }
+          handleDecorationComponent={({ value }) => (
+            <React.Fragment>
+              <div
+                style={{ bottom: `${value}%` }}
+                css={css`
+                  height: 2px;
+                  background: black;
+                  position: absolute;
+                  left: 0;
+                  right: 0;
+                  z-index: 10;
+                  width: 100%;
+                `}
+              ></div>
+            </React.Fragment>
+          )}
+          handleComponent={ConverseHandle}
+          aspectRatio={4 / 3}
+        />
+      </div>
+    </Fragment>
   );
 };
