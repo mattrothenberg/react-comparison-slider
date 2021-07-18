@@ -113,6 +113,14 @@ const DefaultHandleDecorationComponent = (props: DecorationRenderProps) => {
   );
 };
 
+const Slide: React.FC<{ clipPath: string }> = ({ children, clipPath }) => {
+  return (
+    <div css={elementStyle} style={{ clipPath }}>
+      {children}
+    </div>
+  );
+};
+
 export const ComparisonSlider: FC<ComparisonSliderProps> = ({
   beforeComponent,
   afterComponent,
@@ -159,6 +167,27 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
       setLocalValue(newValue);
     }
   };
+
+  const baseSlides = React.useMemo(
+    () => [
+      ({ clip }: { clip: string }) => (
+        <Slide clipPath={clip}>
+          {beforeComponent}
+          <BeforeDecorationComponent value={sliderValue} />
+        </Slide>
+      ),
+      ({ clip }: { clip: string }) => (
+        <Slide clipPath={clip}>
+          {afterComponent}
+          <AfterDecorationComponent value={sliderValue} />
+        </Slide>
+      ),
+    ],
+    [sliderValue]
+  );
+
+  const slides =
+    orientation === 'horizontal' ? baseSlides : baseSlides.reverse();
 
   return (
     <div
@@ -324,30 +353,17 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
       `}
     >
       <HandleDecorationComponent value={sliderValue} />
-      {orientation === 'horizontal' && (
-        <React.Fragment>
-          <div css={elementStyle}>
-            {beforeComponent}
-            <BeforeDecorationComponent value={sliderValue} />
-          </div>
-          <div css={elementStyle} style={{ clipPath }}>
-            {afterComponent}
-            <AfterDecorationComponent value={sliderValue} />
-          </div>
-        </React.Fragment>
-      )}
-      {orientation === 'vertical' && (
-        <React.Fragment>
-          <div css={elementStyle}>
-            {afterComponent}
-            <AfterDecorationComponent value={sliderValue} />
-          </div>
-          <div css={elementStyle} style={{ clipPath }}>
-            {beforeComponent}
-            <BeforeDecorationComponent value={sliderValue} />
-          </div>
-        </React.Fragment>
-      )}
+
+      <React.Fragment>
+        {slides.map((SlideEl, index) => {
+          return (
+            <React.Fragment key={index}>
+              <SlideEl clip={index === 1 ? clipPath : ''} />
+            </React.Fragment>
+          );
+        })}
+      </React.Fragment>
+
       <div
         css={css`
           position: absolute;
