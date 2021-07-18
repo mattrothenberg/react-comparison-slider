@@ -11,6 +11,17 @@ export default {
   component: ComparisonSlider,
 };
 
+const images = [
+  [
+    'https://m.media-amazon.com/images/I/71a8uPfldpL._AC_SR1400,1050_.jpg',
+    'https://m.media-amazon.com/images/I/91h92SK1tEL._AC_SR1400,1050_.jpg',
+  ],
+  [
+    'https://nyc3.digitaloceanspaces.com/bia/2020/05/Cobble-Hill-Kitchen-Before-1024x683.jpg',
+    'https://nyc3.digitaloceanspaces.com/bia/2020/05/baltic-st-kitchen-2-1024x683.jpg',
+  ],
+];
+
 export const Default = () => {
   return (
     <ComparisonSlider
@@ -265,17 +276,80 @@ export const WithImages = () => {
             </Fragment>
           );
         }}
+        beforeComponent={<img alt="Converse" src={images[0][0]} />}
+        afterComponent={<img alt="Converse" src={images[0][1]} />}
+      />
+    </div>
+  );
+};
+
+export const WithImagesParallax = () => {
+  const [value, setValue] = useState(50);
+  const beforeOffset = lerp(-10, 10, value / 100);
+
+  return (
+    <div
+      css={css`
+        width: 700px;
+        border: 2px solid black;
+        overflow: hidden;
+      `}
+    >
+      <ComparisonSlider
+        aspectRatio="4x3"
+        value={value}
+        onValueChange={setValue}
+        handleComponent={CustomHandleComponent}
+        handleDecorationComponent={({ value }) => {
+          return (
+            <Fragment>
+              <div
+                css={css`
+                  position: absolute;
+                  width: 2px;
+                  background: black;
+                  z-index: 10;
+                  pointer-events: none;
+                `}
+                style={{
+                  left: `calc(${value}% - 1px)`,
+                  height: `calc(50% - 0px)`,
+                }}
+              ></div>
+              <div
+                css={css`
+                  position: absolute;
+                  bottom: 0;
+                  width: 2px;
+                  background: black;
+                  z-index: 10;
+                  pointer-events: none;
+                `}
+                style={{
+                  left: `calc(${value}% - 1px)`,
+                  height: `calc(50% - 0px)`,
+                }}
+              ></div>
+            </Fragment>
+          );
+        }}
         beforeComponent={
-          <img
-            alt="Converse"
-            src="https://m.media-amazon.com/images/I/71a8uPfldpL._AC_SR1400,1050_.jpg"
-          />
+          <div
+            style={{
+              backgroundImage: `url(${images[1][0]})`,
+              backgroundSize: 'cover',
+              backgroundPosition: `${beforeOffset}px 100%`,
+            }}
+          ></div>
         }
         afterComponent={
-          <img
-            alt="Converse"
-            src="https://m.media-amazon.com/images/I/91h92SK1tEL._AC_SR1400,1050_.jpg"
-          />
+          <div
+            style={{
+              backgroundImage: `url(${images[1][1]})`,
+              backgroundSize: 'cover',
+              backgroundPosition: `${beforeOffset}px 100%`,
+            }}
+          ></div>
         }
       />
     </div>
@@ -352,17 +426,6 @@ export const GooglyEyes = () => {
     />
   );
 };
-
-const images = [
-  [
-    'https://m.media-amazon.com/images/I/71a8uPfldpL._AC_SR1400,1050_.jpg',
-    'https://m.media-amazon.com/images/I/91h92SK1tEL._AC_SR1400,1050_.jpg',
-  ],
-  [
-    'https://nyc3.digitaloceanspaces.com/bia/2020/05/Cobble-Hill-Kitchen-Before-1024x683.jpg',
-    'https://nyc3.digitaloceanspaces.com/bia/2020/05/baltic-st-kitchen-2-1024x683.jpg',
-  ],
-];
 
 export const Vertical = () => {
   const [value, setValue] = useState(50);
