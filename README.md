@@ -20,10 +20,10 @@ yarn add react-comparison-slider
 
 The key ingredients to this component are:
 
-1. An `aspectRatio`, expressed either as a fraction (e.g., `16/9`), or as a string (e.g., `16x9` or `16:9`). Providing an aspect ratio ensures that the before and after "images" (or HTML elements, whatever you decide to provide) line up with one another.
-2. A `beforeComponent` of type `React.ReactNode` (read: virtually any valid JSX element)
-3. An `afterComponent` of type `React.ReactNode` (read: virtually any valid JSX element)
-4. A `defaultValue`, if you'd like to use the component in an uncontrolled fashion
+1. `aspectRatio`, expressed either numerically as a fraction (e.g., `16/9`), or as a string (e.g., `"16x9"` or `"16:9"`). Providing an aspect ratio ensures that the before and after "images" (or HTML elements, whatever you decide to provide) line up with one another.
+2. `beforeComponent` of type `React.ReactNode` (read: virtually any valid JSX element)
+3. `afterComponent` of type `React.ReactNode` (read: virtually any valid JSX element)
+4. `defaultValue`, if you'd like to use the component in an uncontrolled fashion
 
 ```tsx
 import { ComparisonSlider } from 'react-comparison-slider'
