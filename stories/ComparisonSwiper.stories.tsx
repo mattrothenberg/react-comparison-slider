@@ -22,12 +22,32 @@ const images = [
   ],
 ];
 
+interface StubSlideProps {
+  background: string;
+}
+
+const StubSlide: React.FC<StubSlideProps> = ({ background, children }) => (
+  <div
+    css={{
+      background,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: 'sans-serif',
+      fontSize: 24,
+      color: 'rgba(0,0,0,.25)',
+    }}
+  >
+    {children}
+  </div>
+);
+
 export const Default = () => {
   return (
     <ComparisonSlider
       defaultValue={50}
-      beforeComponent={<div css={{ background: 'tomato' }}></div>}
-      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<StubSlide background="tomato">Before</StubSlide>}
+      afterComponent={<StubSlide background="cornflowerblue">After</StubSlide>}
       aspectRatio={16 / 9}
     />
   );
@@ -42,8 +62,10 @@ export const CustomAspectRatios = () => {
     >
       <ComparisonSlider
         defaultValue={50}
-        beforeComponent={<div css={{ background: 'tomato' }}></div>}
-        afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
+        beforeComponent={<StubSlide background="tomato">Before</StubSlide>}
+        afterComponent={
+          <StubSlide background="cornflowerblue">After</StubSlide>
+        }
         aspectRatio={1}
       />
     </div>
@@ -54,8 +76,8 @@ export const UncontrolledInitialValue = () => {
   return (
     <ComparisonSlider
       defaultValue={75}
-      beforeComponent={<div css={{ background: 'tomato' }}></div>}
-      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<StubSlide background="tomato">Before</StubSlide>}
+      afterComponent={<StubSlide background="cornflowerblue">After</StubSlide>}
       aspectRatio={16 / 9}
     />
   );
@@ -67,8 +89,8 @@ export const FullyControlled = () => {
     <ComparisonSlider
       value={value}
       onValueChange={setValue}
-      beforeComponent={<div css={{ background: 'tomato' }}></div>}
-      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<StubSlide background="tomato">Before</StubSlide>}
+      afterComponent={<StubSlide background="cornflowerblue">After</StubSlide>}
       aspectRatio={16 / 9}
     />
   );
@@ -131,8 +153,8 @@ export const CustomHandle = () => {
   return (
     <ComparisonSlider
       defaultValue={50}
-      beforeComponent={<div css={{ background: 'tomato' }}></div>}
-      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<StubSlide background="tomato">Before</StubSlide>}
+      afterComponent={<StubSlide background="cornflowerblue">After</StubSlide>}
       aspectRatio={16 / 9}
       handleComponent={CustomHandleComponent}
     />
@@ -143,8 +165,8 @@ export const CustomHandleDecorations = () => {
   return (
     <ComparisonSlider
       defaultValue={50}
-      beforeComponent={<div css={{ background: 'tomato' }}></div>}
-      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<StubSlide background="tomato">Before</StubSlide>}
+      afterComponent={<StubSlide background="cornflowerblue">After</StubSlide>}
       aspectRatio={16 / 9}
       handleDecorationComponent={({ value }) => {
         return (
@@ -195,8 +217,8 @@ export const CustomElementDecorations = () => {
   return (
     <ComparisonSlider
       defaultValue={50}
-      beforeComponent={<div css={{ background: 'tomato' }}></div>}
-      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<StubSlide background="tomato">Before</StubSlide>}
+      afterComponent={<StubSlide background="cornflowerblue">After</StubSlide>}
       beforeDecorationComponent={({ value }) => (
         <div
           css={css`
@@ -395,8 +417,8 @@ export const GooglyEyes = () => {
   return (
     <ComparisonSlider
       defaultValue={50}
-      beforeComponent={<div css={{ background: 'tomato' }}></div>}
-      afterComponent={<div css={{ background: 'cornflowerblue' }}></div>}
+      beforeComponent={<StubSlide background="tomato">Before</StubSlide>}
+      afterComponent={<StubSlide background="cornflowerblue">After</StubSlide>}
       aspectRatio={16 / 9}
       beforeDecorationComponent={({ value }) => (
         <div
