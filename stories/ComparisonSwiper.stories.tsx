@@ -2,8 +2,8 @@
 /** @jsx jsx */
 
 import { jsx, css } from '@emotion/react';
-import React, { forwardRef, Fragment, useState } from 'react';
-import { ComparisonSlider, ComparisonSliderHandleProps } from '../src';
+import React, { Fragment, useState } from 'react';
+import { ComparisonSlider } from '../src';
 import { BiMoveHorizontal, BiStar } from 'react-icons/bi';
 
 export default {

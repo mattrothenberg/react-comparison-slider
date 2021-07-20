@@ -91,15 +91,16 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
   const isControlled =
     typeof defaultValue === 'undefined' && typeof value !== 'undefined';
 
+  const isHorizontal = orientation === 'horizontal';
+
   const sliderValue = (isControlled ? value : localValue) as number;
 
   const padding = calculateAspectRatio(aspectRatio);
-  const clipPath =
-    orientation === 'horizontal'
-      ? `polygon(${sliderValue}% 0, 100% 0%, 100% 100%, ${sliderValue}% 100%)`
-      : `polygon(0% 100%, 0% ${100 - sliderValue}%, 100% ${
-          100 - sliderValue
-        }%, 100% 100%)`;
+  const clipPath = isHorizontal
+    ? `polygon(${sliderValue}% 0, 100% 0%, 100% 100%, ${sliderValue}% 100%)`
+    : `polygon(0% 100%, 0% ${100 - sliderValue}%, 100% ${
+        100 - sliderValue
+      }%, 100% 100%)`;
 
   const HandleDecorationComponent = renderDecoration;
   const BeforeDecorationComponent = renderBeforeDecoration;
@@ -124,11 +125,9 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
     </React.Fragment>,
   ];
 
-  const direction =
-    orientation === 'horizontal' ? Direction.Right : Direction.Up;
+  const direction = isHorizontal ? Direction.Right : Direction.Up;
 
-  const slides =
-    orientation === 'horizontal' ? baseSlides : baseSlides.reverse();
+  const slides = isHorizontal ? baseSlides : baseSlides.reverse();
 
   return (
     <div
