@@ -3,11 +3,7 @@ import { Direction, Range } from 'react-range';
 import { IThumbProps } from 'react-range/lib/types';
 import { styled } from '@stitches/react';
 
-import { calculateAspectRatio } from './util';
-
-interface DecorationRenderProps {
-  value: number;
-}
+import { calculateAspectRatio, isFunction } from './util';
 
 export interface ComparisonSliderHandleProps extends IThumbProps {
   isFocused: boolean;
@@ -17,14 +13,16 @@ export type ComparisonSliderProps = ComparisonSliderStatefulProps &
   ComparisonSliderCommonProps;
 
 interface ComparisonSliderCommonProps {
-  beforeComponent: React.ReactNode;
-  afterComponent: React.ReactNode;
+  itemOne:
+    | React.ReactNode
+    | (({ value }: { value: number }) => React.ReactNode);
+  itemTwo:
+    | React.ReactNode
+    | (({ value }: { value: number }) => React.ReactNode);
   aspectRatio: number | string;
-  renderBeforeDecoration?: (props: DecorationRenderProps) => JSX.Element;
-  renderAfterDecoration?: (props: DecorationRenderProps) => JSX.Element;
-  handleBeforeComponent?: React.ReactNode;
-  handleAfterComponent?: React.ReactNode;
-  renderHandle?: (props: ComparisonSliderHandleProps) => JSX.Element;
+  handleBefore?: React.ReactNode;
+  handleAfter?: React.ReactNode;
+  handle?: (props: ComparisonSliderHandleProps) => React.ReactNode;
   orientation?: 'vertical' | 'horizontal';
   onlyHandleDraggable?: boolean;
 }
@@ -106,21 +104,20 @@ const HandleWrap = styled('div', {
   zIndex: 1,
 });
 
-const DefaultRenderHandle = (props: IThumbProps) => {
-  return <Handle {...props}></Handle>;
+const DefaultHandle = (props: ComparisonSliderHandleProps) => {
+  const { isFocused, ...rest } = props;
+  return <Handle {...rest}></Handle>;
 };
 
 export const ComparisonSlider: FC<ComparisonSliderProps> = ({
-  beforeComponent,
-  afterComponent,
+  itemOne,
+  itemTwo,
   aspectRatio,
   defaultValue,
   value,
-  renderHandle = DefaultRenderHandle,
-  renderBeforeDecoration = () => null,
-  renderAfterDecoration = () => null,
-  handleBeforeComponent = () => null,
-  handleAfterComponent = () => null,
+  handle = DefaultHandle,
+  handleBefore = null,
+  handleAfter = null,
   orientation = 'horizontal',
   onValueChange = () => {},
   onlyHandleDraggable = false,
@@ -141,9 +138,6 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
         100 - sliderValue
       }%, 100% 100%)`;
 
-  const BeforeDecorationComponent = renderBeforeDecoration;
-  const AfterDecorationComponent = renderAfterDecoration;
-
   const handleChange = (newValue: number) => {
     if (isControlled) {
       onValueChange(newValue);
@@ -152,15 +146,19 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
     }
   };
 
+  const ItemOne =
+    itemOne && isFunction(itemOne as Function)
+      ? (itemOne as Function)({ value: sliderValue })
+      : itemOne;
+
+  const ItemTwo =
+    itemTwo && isFunction(itemTwo as Function)
+      ? (itemTwo as Function)({ value: sliderValue })
+      : itemTwo;
+
   const baseSlides = [
-    <React.Fragment>
-      {beforeComponent}
-      <BeforeDecorationComponent value={sliderValue} />
-    </React.Fragment>,
-    <React.Fragment>
-      {afterComponent}
-      <AfterDecorationComponent value={sliderValue} />
-    </React.Fragment>,
+    <React.Fragment>{ItemOne}</React.Fragment>,
+    <React.Fragment>{ItemTwo}</React.Fragment>,
   ];
 
   const direction = isHorizontal ? Direction.Right : Direction.Up;
@@ -203,12 +201,13 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
             </Track>
           )}
           renderThumb={(params) => {
-            let props: IThumbProps = {
+            let props: ComparisonSliderHandleProps = {
               ...params.props,
               style: {
                 ...params.props.style,
                 pointerEvents: 'all',
               },
+              isFocused: focused,
             };
             return (
               <HandleCanvasWrap
@@ -222,14 +221,12 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
                 onFocus={() => setFocused(true)}
                 onBlur={() => setFocused(false)}
               >
-                <HandleDecoration>{handleBeforeComponent}</HandleDecoration>
+                <HandleDecoration>{handleBefore}</HandleDecoration>
                 <HandleWrap>
-                  {renderHandle({
-                    ...props,
-                    isFocused: focused,
-                  })}
+                  {/* @ts-ignore */}
+                  {handle(props)}
                 </HandleWrap>
-                <HandleDecoration>{handleAfterComponent}</HandleDecoration>
+                <HandleDecoration>{handleAfter}</HandleDecoration>
               </HandleCanvasWrap>
             );
           }}
