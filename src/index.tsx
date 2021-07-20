@@ -9,10 +9,12 @@ interface DecorationRenderProps {
   value: number;
 }
 
+export interface ComparisonSliderHandleProps extends IThumbProps {
+  isFocused: boolean;
+}
+
 export type ComparisonSliderProps = ComparisonSliderStatefulProps &
   ComparisonSliderCommonProps;
-
-export interface ComparisonSliderHandleProps extends IThumbProps {}
 
 interface ComparisonSliderCommonProps {
   beforeComponent: React.ReactNode;
@@ -20,8 +22,9 @@ interface ComparisonSliderCommonProps {
   aspectRatio: number | string;
   renderBeforeDecoration?: (props: DecorationRenderProps) => JSX.Element;
   renderAfterDecoration?: (props: DecorationRenderProps) => JSX.Element;
-  renderDecoration?: (props: DecorationRenderProps) => JSX.Element;
-  renderHandle?: (props: IThumbProps) => JSX.Element;
+  handleBeforeComponent?: React.ReactNode;
+  handleAfterComponent?: React.ReactNode;
+  renderHandle?: (props: ComparisonSliderHandleProps) => JSX.Element;
   orientation?: 'vertical' | 'horizontal';
   onlyHandleDraggable?: boolean;
 }
@@ -79,6 +82,30 @@ const AspectWrap = styled('div', {
   position: 'relative',
 });
 
+const HandleDecoration = styled('div', {
+  flex: '1 1 0%',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  pointerEvents: 'all',
+});
+
+const HandleCanvasWrap = styled('div', {
+  display: 'flex',
+  '&:focus': {
+    outline: 'none',
+  },
+});
+
+const HandleWrap = styled('div', {
+  flexShrink: 0,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 1,
+});
+
 const DefaultRenderHandle = (props: IThumbProps) => {
   return <Handle {...props}></Handle>;
 };
@@ -90,13 +117,15 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
   defaultValue,
   value,
   renderHandle = DefaultRenderHandle,
-  renderDecoration = () => null,
   renderBeforeDecoration = () => null,
   renderAfterDecoration = () => null,
+  handleBeforeComponent = () => null,
+  handleAfterComponent = () => null,
   orientation = 'horizontal',
   onValueChange = () => {},
   onlyHandleDraggable = false,
 }) => {
+  const [focused, setFocused] = React.useState(false);
   const [localValue, setLocalValue] = React.useState(defaultValue);
   const isControlled =
     typeof defaultValue === 'undefined' && typeof value !== 'undefined';
@@ -112,7 +141,6 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
         100 - sliderValue
       }%, 100% 100%)`;
 
-  const HandleDecorationComponent = renderDecoration;
   const BeforeDecorationComponent = renderBeforeDecoration;
   const AfterDecorationComponent = renderAfterDecoration;
 
@@ -141,8 +169,6 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
 
   return (
     <AspectWrap style={{ paddingBottom: `${padding}%` }}>
-      <HandleDecorationComponent value={sliderValue} />
-
       <React.Fragment>
         {slides.map((content, index) => {
           return (
@@ -184,8 +210,28 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
                 pointerEvents: 'all',
               },
             };
-
-            return renderHandle(props);
+            return (
+              <HandleCanvasWrap
+                {...params.props}
+                style={{
+                  ...params.props.style,
+                  flexDirection: isHorizontal ? 'column' : 'row',
+                  height: isHorizontal ? '100%' : 'auto',
+                  width: isHorizontal ? 'auto' : '100%',
+                }}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
+              >
+                <HandleDecoration>{handleBeforeComponent}</HandleDecoration>
+                <HandleWrap>
+                  {renderHandle({
+                    ...props,
+                    isFocused: focused,
+                  })}
+                </HandleWrap>
+                <HandleDecoration>{handleAfterComponent}</HandleDecoration>
+              </HandleCanvasWrap>
+            );
           }}
         />
       </RangeWrap>
