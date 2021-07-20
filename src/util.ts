@@ -20,3 +20,9 @@ export function calculateAspectRatio(ratio: number | string) {
     return (height / width) * 100;
   }
 }
+
+export function isFunction(functionToCheck: Function) {
+  return (
+    functionToCheck && {}.toString.call(functionToCheck) === '[object Function]'
+  );
+}

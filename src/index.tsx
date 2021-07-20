@@ -1,33 +1,30 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx, css } from '@emotion/react';
-import React, { FC, forwardRef } from 'react';
-import {
-  SliderInput,
-  SliderTrack,
-  SliderRange,
-  SliderHandle,
-  SliderHandleProps,
-} from '@reach/slider';
+import React, { FC } from 'react';
+import { Direction, Range } from 'react-range';
+import { IThumbProps } from 'react-range/lib/types';
+import { styled } from '@stitches/react';
 
-import { calculateAspectRatio } from './util';
+import { calculateAspectRatio, isFunction } from './util';
 
-interface DecorationRenderProps {
-  value: number;
+export interface ComparisonSliderHandleProps extends IThumbProps {
+  isFocused: boolean;
 }
 
 export type ComparisonSliderProps = ComparisonSliderStatefulProps &
   ComparisonSliderCommonProps;
 
 interface ComparisonSliderCommonProps {
-  beforeComponent: React.ReactNode;
-  afterComponent: React.ReactNode;
+  itemOne:
+    | React.ReactNode
+    | (({ value }: { value: number }) => React.ReactNode);
+  itemTwo:
+    | React.ReactNode
+    | (({ value }: { value: number }) => React.ReactNode);
   aspectRatio: number | string;
-  handleDecorationComponent?: React.FC<DecorationRenderProps>;
-  beforeDecorationComponent?: React.FC<DecorationRenderProps>;
-  afterDecorationComponent?: React.FC<DecorationRenderProps>;
-  handleComponent?: React.FC<ComparisonSliderHandleProps>;
+  handleBefore?: React.ReactNode;
+  handleAfter?: React.ReactNode;
+  handle?: (props: ComparisonSliderHandleProps) => React.ReactNode;
   orientation?: 'vertical' | 'horizontal';
+  onlyHandleDraggable?: boolean;
 }
 
 type ComparisonSliderStatefulProps =
@@ -38,119 +35,108 @@ type ComparisonSliderStatefulProps =
       defaultValue?: never;
     };
 
-export type ComparisonSliderHandleProps = SliderHandleProps;
-
-const elementStyle = css`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  > * {
-    height: 100%;
-  }
-
-  > *:not(style) + * {
-    height: unset;
-  }
-`;
-
-const DefaultHandleComponent = forwardRef<
-  HTMLDivElement,
-  ComparisonSliderHandleProps
->((props, ref) => {
-  return (
-    <div
-      {...props}
-      ref={ref}
-      css={css`
-        width: 16px;
-        height: 16px;
-        background: white;
-        border-radius: 100%;
-        border: 1px solid transparent;
-
-        &:focus {
-          outline: none;
-          box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
-          border-color: rgba(0, 0, 0, 1);
-        }
-      `}
-    ></div>
-  );
+const PinnedDiv = styled('div', {
+  width: '100%',
+  height: '100%',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  position: 'absolute',
 });
 
-const DefaultHandleDecorationComponent = (props: DecorationRenderProps) => {
-  const { value } = props;
+const Track = styled(PinnedDiv, {
+  background: 'transparent',
+  zIndex: 10,
+});
 
-  return (
-    <React.Fragment>
-      <div
-        css={css`
-          position: absolute;
-          width: 1px;
-          background: white;
-          z-index: 10;
-          pointer-events: none;
-        `}
-        style={{ left: `${value}%`, height: `calc(50% - 0px)` }}
-      ></div>
-      <div
-        css={css`
-          position: absolute;
-          bottom: 0;
-          width: 1px;
-          background: white;
-          z-index: 10;
-          pointer-events: none;
-        `}
-        style={{ left: `${value}%`, height: `calc(50% - 0px)` }}
-      ></div>
-    </React.Fragment>
-  );
+const RangeWrap = PinnedDiv;
+
+const Element = styled(PinnedDiv, {
+  '> *': {
+    height: '100%',
+  },
+
+  '> *:not(style) + *': {
+    height: 'unset',
+  },
+});
+
+const Handle = styled('div', {
+  width: 16,
+  height: 16,
+  background: 'white',
+  borderRadius: '100%',
+  border: '1px solid transparent',
+  '&:focus': {
+    outline: 'none',
+    boxShadow: '0 0 0 2px rgba(0, 0, 0, 0.25)',
+    borderColor: 'rgba(0, 0, 0, 1)',
+  },
+});
+
+const AspectWrap = styled('div', {
+  height: 0,
+  position: 'relative',
+});
+
+const HandleDecoration = styled('div', {
+  flex: '1 1 0%',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  pointerEvents: 'all',
+});
+
+const HandleCanvasWrap = styled('div', {
+  display: 'flex',
+  '&:focus': {
+    outline: 'none',
+  },
+});
+
+const HandleWrap = styled('div', {
+  flexShrink: 0,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 1,
+});
+
+const DefaultHandle = (props: ComparisonSliderHandleProps) => {
+  const { isFocused, ...rest } = props;
+  return <Handle {...rest}></Handle>;
 };
 
 export const ComparisonSlider: FC<ComparisonSliderProps> = ({
-  beforeComponent,
-  afterComponent,
+  itemOne,
+  itemTwo,
   aspectRatio,
   defaultValue,
   value,
-  handleDecorationComponent = DefaultHandleDecorationComponent,
-  handleComponent = DefaultHandleComponent,
-  beforeDecorationComponent = () => null,
-  afterDecorationComponent = () => null,
+  handle = DefaultHandle,
+  handleBefore = null,
+  handleAfter = null,
   orientation = 'horizontal',
   onValueChange = () => {},
+  onlyHandleDraggable = false,
 }) => {
+  const [focused, setFocused] = React.useState(false);
   const [localValue, setLocalValue] = React.useState(defaultValue);
   const isControlled =
     typeof defaultValue === 'undefined' && typeof value !== 'undefined';
 
+  const isHorizontal = orientation === 'horizontal';
+
   const sliderValue = (isControlled ? value : localValue) as number;
 
   const padding = calculateAspectRatio(aspectRatio);
-  const clipPath =
-    orientation === 'horizontal'
-      ? `polygon(${sliderValue}% 0, 100% 0%, 100% 100%, ${sliderValue}% 100%)`
-      : `polygon(0% 100%, 0% ${100 - sliderValue}%, 100% ${
-          100 - sliderValue
-        }%, 100% 100%)`;
-
-  const HandleDecorationComponent = handleDecorationComponent;
-  const BeforeDecorationComponent = beforeDecorationComponent;
-  const AfterDecorationComponent = afterDecorationComponent;
-  const HandleComponent = handleComponent;
-  const ForwardedHandleComponent = React.useMemo(
-    () =>
-      forwardRef<HTMLDivElement, ComparisonSliderHandleProps>((props, ref) => {
-        return <HandleComponent {...props} ref={ref} />;
-      }),
-    []
-  );
+  const clipPath = isHorizontal
+    ? `polygon(${sliderValue}% 0, 100% 0%, 100% 100%, ${sliderValue}% 100%)`
+    : `polygon(0% 100%, 0% ${100 - sliderValue}%, 100% ${
+        100 - sliderValue
+      }%, 100% 100%)`;
 
   const handleChange = (newValue: number) => {
     if (isControlled) {
@@ -160,141 +146,92 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
     }
   };
 
+  const ItemOne =
+    itemOne && isFunction(itemOne as Function)
+      ? (itemOne as Function)({ value: sliderValue })
+      : itemOne;
+
+  const ItemTwo =
+    itemTwo && isFunction(itemTwo as Function)
+      ? (itemTwo as Function)({ value: sliderValue })
+      : itemTwo;
+
   const baseSlides = [
-    <React.Fragment>
-      {beforeComponent}
-      <BeforeDecorationComponent value={sliderValue} />
-    </React.Fragment>,
-    <React.Fragment>
-      {afterComponent}
-      <AfterDecorationComponent value={sliderValue} />
-    </React.Fragment>,
+    <React.Fragment>{ItemOne}</React.Fragment>,
+    <React.Fragment>{ItemTwo}</React.Fragment>,
   ];
 
-  const slides =
-    orientation === 'horizontal' ? baseSlides : baseSlides.reverse();
+  const direction = isHorizontal ? Direction.Right : Direction.Up;
+
+  const slides = isHorizontal ? baseSlides : baseSlides.reverse();
 
   return (
-    <div
-      css={css`
-        height: 0;
-        padding-bottom: ${padding}%;
-        position: relative;
-
-        :root {
-          --reach-slider: 1;
-        }
-
-        [data-reach-slider-input] {
-          max-width: 100%;
-        }
-
-        [data-reach-slider-track][data-orientation='horizontal'] {
-          width: 100%;
-          height: inherit;
-        }
-
-        [data-reach-slider-track][data-orientation='vertical'] {
-          width: inherit;
-          height: 100%;
-        }
-
-        /* This pseudo element provides an invisible area that increases the touch
-        target size of the track */
-        [data-reach-slider-track]::before {
-          content: '';
-          position: absolute;
-        }
-
-        [data-reach-slider-handle][aria-orientation='horizontal'] {
-          top: 50%;
-          transform: translateY(-50%);
-        }
-
-        [data-reach-slider-handle][aria-orientation='horizontal']:focus {
-          transform: translateY(-50%);
-        }
-
-        [data-reach-slider-handle][aria-orientation='vertical'] {
-          left: 50%;
-          transform: translateX(-50%);
-        }
-
-        [data-reach-slider-range][data-orientation='horizontal'] {
-          height: 100%;
-        }
-
-        [data-reach-slider-range][data-orientation='vertical'] {
-          width: 100%;
-        }
-
-        [data-reach-slider-input][data-orientation='horizontal'] {
-          height: 100% !important;
-        }
-
-        [data-reach-slider-track][data-orientation='horizontal'] {
-          background: transparent;
-          height: 100% !important;
-        }
-
-        [data-reach-slider-range][data-orientation='horizontal'],
-        [data-reach-slider-range][data-orientation='vertical'] {
-          background: transparent !important;
-        }
-
-        [data-reach-slider-input][data-orientation='vertical'] {
-          width: 100% !important;
-          height: 100% !important;
-          background: transparent !important;
-        }
-
-        [data-reach-slider-track][data-orientation='vertical'] {
-          background: transparent !important;
-        }
-      `}
-    >
-      <HandleDecorationComponent value={sliderValue} />
-
+    <AspectWrap style={{ paddingBottom: `${padding}%` }}>
       <React.Fragment>
         {slides.map((content, index) => {
           return (
-            <div
-              css={elementStyle}
+            <Element
               style={{ clipPath: index === 1 ? clipPath : '' }}
               key={index}
             >
               {content}
-            </div>
+            </Element>
           );
         })}
       </React.Fragment>
 
-      <div
-        css={css`
-          position: absolute;
-          z-index: 10;
-          width: 100%;
-          height: 100%;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-        `}
-      >
-        <SliderInput
+      <RangeWrap>
+        <Range
+          step={1}
           min={0}
           max={100}
-          value={sliderValue}
-          onChange={handleChange}
-          // @ts-ignore
-          orientation={orientation}
-        >
-          <SliderTrack>
-            <SliderRange />
-            <SliderHandle as={ForwardedHandleComponent} />
-          </SliderTrack>
-        </SliderInput>
-      </div>
-    </div>
+          values={[sliderValue]}
+          onChange={(values) => handleChange(values[0])}
+          direction={direction}
+          renderTrack={({ props, children }) => (
+            <Track
+              className=""
+              {...props}
+              style={{
+                ...props.style,
+                pointerEvents: onlyHandleDraggable ? 'none' : 'all',
+              }}
+            >
+              {children}
+            </Track>
+          )}
+          renderThumb={(params) => {
+            let props: ComparisonSliderHandleProps = {
+              ...params.props,
+              style: {
+                ...params.props.style,
+                pointerEvents: 'all',
+              },
+              isFocused: focused,
+            };
+            return (
+              <HandleCanvasWrap
+                {...params.props}
+                style={{
+                  ...params.props.style,
+                  flexDirection: isHorizontal ? 'column' : 'row',
+                  height: isHorizontal ? '100%' : 'auto',
+                  width: isHorizontal ? 'auto' : '100%',
+                }}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
+              >
+                <HandleDecoration>{handleBefore}</HandleDecoration>
+                <HandleWrap>
+                  {/* @ts-ignore */}
+                  {handle(props)}
+                </HandleWrap>
+                <HandleDecoration>{handleAfter}</HandleDecoration>
+              </HandleCanvasWrap>
+            );
+          }}
+        />
+      </RangeWrap>
+    </AspectWrap>
   );
 };
