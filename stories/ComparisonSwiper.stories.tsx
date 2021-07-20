@@ -473,3 +473,16 @@ export const DoubleClickReset = () => {
     />
   );
 };
+
+export const OnlyHandleDraggable = () => {
+  return (
+    <ComparisonSlider
+      onlyHandleDraggable
+      defaultValue={50}
+      beforeComponent={<StubSlide background="tomato">Before</StubSlide>}
+      afterComponent={<StubSlide background="cornflowerblue">After</StubSlide>}
+      aspectRatio={16 / 9}
+      renderHandle={CustomHandleComponent}
+    />
+  );
+};

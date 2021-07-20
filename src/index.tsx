@@ -23,6 +23,7 @@ interface ComparisonSliderCommonProps {
   renderDecoration?: (props: DecorationRenderProps) => JSX.Element;
   renderHandle?: (props: IThumbProps) => JSX.Element;
   orientation?: 'vertical' | 'horizontal';
+  onlyHandleDraggable?: boolean;
 }
 
 type ComparisonSliderStatefulProps =
@@ -33,7 +34,7 @@ type ComparisonSliderStatefulProps =
       defaultValue?: never;
     };
 
-const pinned = {
+const PinnedDiv = styled('div', {
   width: '100%',
   height: '100%',
   top: 0,
@@ -41,22 +42,16 @@ const pinned = {
   right: 0,
   bottom: 0,
   position: 'absolute',
-};
-
-// @ts-ignore
-const Track = styled('div', {
-  background: 'transparent',
-  zIndex: 10,
-  ...pinned,
 });
 
-// @ts-ignore
-const RangeWrap = styled('div', pinned);
+const Track = styled(PinnedDiv, {
+  background: 'transparent',
+  zIndex: 10,
+});
 
-// @ts-ignore
-const Element = styled('div', {
-  ...pinned,
+const RangeWrap = PinnedDiv;
 
+const Element = styled(PinnedDiv, {
   '> *': {
     height: '100%',
   },
@@ -100,6 +95,7 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
   renderAfterDecoration = () => null,
   orientation = 'horizontal',
   onValueChange = () => {},
+  onlyHandleDraggable = false,
 }) => {
   const [localValue, setLocalValue] = React.useState(defaultValue);
   const isControlled =
@@ -169,9 +165,28 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
           onChange={(values) => handleChange(values[0])}
           direction={direction}
           renderTrack={({ props, children }) => (
-            <Track {...props}>{children}</Track>
+            <Track
+              className=""
+              {...props}
+              style={{
+                ...props.style,
+                pointerEvents: onlyHandleDraggable ? 'none' : 'all',
+              }}
+            >
+              {children}
+            </Track>
           )}
-          renderThumb={(params) => renderHandle(params.props)}
+          renderThumb={(params) => {
+            let props: IThumbProps = {
+              ...params.props,
+              style: {
+                ...params.props.style,
+                pointerEvents: 'all',
+              },
+            };
+
+            return renderHandle(props);
+          }}
         />
       </RangeWrap>
     </AspectWrap>
