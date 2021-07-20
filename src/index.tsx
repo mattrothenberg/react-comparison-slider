@@ -1,14 +1,9 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
-import React, { FC, forwardRef } from 'react';
-import {
-  SliderInput,
-  SliderTrack,
-  SliderRange,
-  SliderHandle,
-  SliderHandleProps,
-} from '@reach/slider';
+import React, { FC } from 'react';
+import { Direction, Range } from 'react-range';
+import { IThumbProps } from 'react-range/lib/types';
 
 import { calculateAspectRatio } from './util';
 
@@ -19,14 +14,16 @@ interface DecorationRenderProps {
 export type ComparisonSliderProps = ComparisonSliderStatefulProps &
   ComparisonSliderCommonProps;
 
+export interface ComparisonSliderHandleProps extends IThumbProps {}
+
 interface ComparisonSliderCommonProps {
   beforeComponent: React.ReactNode;
   afterComponent: React.ReactNode;
   aspectRatio: number | string;
-  handleDecorationComponent?: React.FC<DecorationRenderProps>;
-  beforeDecorationComponent?: React.FC<DecorationRenderProps>;
-  afterDecorationComponent?: React.FC<DecorationRenderProps>;
-  handleComponent?: React.FC<ComparisonSliderHandleProps>;
+  renderBeforeDecoration?: (props: DecorationRenderProps) => JSX.Element;
+  renderAfterDecoration?: (props: DecorationRenderProps) => JSX.Element;
+  renderDecoration?: (props: DecorationRenderProps) => JSX.Element;
+  renderHandle?: (props: IThumbProps) => JSX.Element;
   orientation?: 'vertical' | 'horizontal';
 }
 
@@ -37,8 +34,6 @@ type ComparisonSliderStatefulProps =
       onValueChange: (value: number) => void;
       defaultValue?: never;
     };
-
-export type ComparisonSliderHandleProps = SliderHandleProps;
 
 const elementStyle = css`
   position: absolute;
@@ -58,14 +53,9 @@ const elementStyle = css`
   }
 `;
 
-const DefaultHandleComponent = forwardRef<
-  HTMLDivElement,
-  ComparisonSliderHandleProps
->((props, ref) => {
+const DefaultRenderHandle = (props: IThumbProps) => {
   return (
     <div
-      {...props}
-      ref={ref}
       css={css`
         width: 16px;
         height: 16px;
@@ -79,37 +69,8 @@ const DefaultHandleComponent = forwardRef<
           border-color: rgba(0, 0, 0, 1);
         }
       `}
+      {...props}
     ></div>
-  );
-});
-
-const DefaultHandleDecorationComponent = (props: DecorationRenderProps) => {
-  const { value } = props;
-
-  return (
-    <React.Fragment>
-      <div
-        css={css`
-          position: absolute;
-          width: 1px;
-          background: white;
-          z-index: 10;
-          pointer-events: none;
-        `}
-        style={{ left: `${value}%`, height: `calc(50% - 0px)` }}
-      ></div>
-      <div
-        css={css`
-          position: absolute;
-          bottom: 0;
-          width: 1px;
-          background: white;
-          z-index: 10;
-          pointer-events: none;
-        `}
-        style={{ left: `${value}%`, height: `calc(50% - 0px)` }}
-      ></div>
-    </React.Fragment>
   );
 };
 
@@ -119,10 +80,10 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
   aspectRatio,
   defaultValue,
   value,
-  handleDecorationComponent = DefaultHandleDecorationComponent,
-  handleComponent = DefaultHandleComponent,
-  beforeDecorationComponent = () => null,
-  afterDecorationComponent = () => null,
+  renderHandle = DefaultRenderHandle,
+  renderDecoration = () => null,
+  renderBeforeDecoration = () => null,
+  renderAfterDecoration = () => null,
   orientation = 'horizontal',
   onValueChange = () => {},
 }) => {
@@ -140,17 +101,9 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
           100 - sliderValue
         }%, 100% 100%)`;
 
-  const HandleDecorationComponent = handleDecorationComponent;
-  const BeforeDecorationComponent = beforeDecorationComponent;
-  const AfterDecorationComponent = afterDecorationComponent;
-  const HandleComponent = handleComponent;
-  const ForwardedHandleComponent = React.useMemo(
-    () =>
-      forwardRef<HTMLDivElement, ComparisonSliderHandleProps>((props, ref) => {
-        return <HandleComponent {...props} ref={ref} />;
-      }),
-    []
-  );
+  const HandleDecorationComponent = renderDecoration;
+  const BeforeDecorationComponent = renderBeforeDecoration;
+  const AfterDecorationComponent = renderAfterDecoration;
 
   const handleChange = (newValue: number) => {
     if (isControlled) {
@@ -171,6 +124,9 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
     </React.Fragment>,
   ];
 
+  const direction =
+    orientation === 'horizontal' ? Direction.Right : Direction.Up;
+
   const slides =
     orientation === 'horizontal' ? baseSlides : baseSlides.reverse();
 
@@ -180,77 +136,6 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
         height: 0;
         padding-bottom: ${padding}%;
         position: relative;
-
-        :root {
-          --reach-slider: 1;
-        }
-
-        [data-reach-slider-input] {
-          max-width: 100%;
-        }
-
-        [data-reach-slider-track][data-orientation='horizontal'] {
-          width: 100%;
-          height: inherit;
-        }
-
-        [data-reach-slider-track][data-orientation='vertical'] {
-          width: inherit;
-          height: 100%;
-        }
-
-        /* This pseudo element provides an invisible area that increases the touch
-        target size of the track */
-        [data-reach-slider-track]::before {
-          content: '';
-          position: absolute;
-        }
-
-        [data-reach-slider-handle][aria-orientation='horizontal'] {
-          top: 50%;
-          transform: translateY(-50%);
-        }
-
-        [data-reach-slider-handle][aria-orientation='horizontal']:focus {
-          transform: translateY(-50%);
-        }
-
-        [data-reach-slider-handle][aria-orientation='vertical'] {
-          left: 50%;
-          transform: translateX(-50%);
-        }
-
-        [data-reach-slider-range][data-orientation='horizontal'] {
-          height: 100%;
-        }
-
-        [data-reach-slider-range][data-orientation='vertical'] {
-          width: 100%;
-        }
-
-        [data-reach-slider-input][data-orientation='horizontal'] {
-          height: 100% !important;
-        }
-
-        [data-reach-slider-track][data-orientation='horizontal'] {
-          background: transparent;
-          height: 100% !important;
-        }
-
-        [data-reach-slider-range][data-orientation='horizontal'],
-        [data-reach-slider-range][data-orientation='vertical'] {
-          background: transparent !important;
-        }
-
-        [data-reach-slider-input][data-orientation='vertical'] {
-          width: 100% !important;
-          height: 100% !important;
-          background: transparent !important;
-        }
-
-        [data-reach-slider-track][data-orientation='vertical'] {
-          background: transparent !important;
-        }
       `}
     >
       <HandleDecorationComponent value={sliderValue} />
@@ -281,19 +166,33 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
           bottom: 0;
         `}
       >
-        <SliderInput
+        <Range
+          step={1}
           min={0}
           max={100}
-          value={sliderValue}
-          onChange={handleChange}
-          // @ts-ignore
-          orientation={orientation}
-        >
-          <SliderTrack>
-            <SliderRange />
-            <SliderHandle as={ForwardedHandleComponent} />
-          </SliderTrack>
-        </SliderInput>
+          values={[sliderValue]}
+          onChange={(values) => handleChange(values[0])}
+          direction={direction}
+          renderTrack={({ props, children }) => (
+            <div
+              {...props}
+              css={css`
+                background: transparent;
+                position: absolute;
+                z-index: 10;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+              `}
+            >
+              {children}
+            </div>
+          )}
+          renderThumb={(params) => renderHandle(params.props)}
+        />
       </div>
     </div>
   );

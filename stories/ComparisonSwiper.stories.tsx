@@ -96,37 +96,30 @@ export const FullyControlled = () => {
   );
 };
 
-const ConverseHandle = forwardRef<HTMLDivElement, ComparisonSliderHandleProps>(
-  (props, ref) => {
-    return (
-      <div
-        ref={ref}
-        css={css`
-          background: black;
-          width: 48px;
-          height: 48px;
-          border-radius: 100%;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          color: rgba(255, 255, 255, 1);
-          cursor: pointer;
-        `}
-        {...props}
-      >
-        <BiStar size={24} />
-      </div>
-    );
-  }
-);
-
-const CustomHandleComponent = forwardRef<
-  HTMLDivElement,
-  ComparisonSliderHandleProps
->((props, ref) => {
+const ConverseHandle = (props) => {
   return (
     <div
-      ref={ref}
+      css={css`
+        background: black;
+        width: 48px;
+        height: 48px;
+        border-radius: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 1);
+        cursor: pointer;
+      `}
+      {...props}
+    >
+      <BiStar size={24} />
+    </div>
+  );
+};
+
+const CustomHandleComponent = (props) => {
+  return (
+    <div
       css={css`
         background: white;
         width: 48px;
@@ -147,7 +140,7 @@ const CustomHandleComponent = forwardRef<
       <BiMoveHorizontal size={24} />
     </div>
   );
-});
+};
 
 export const CustomHandle = () => {
   return (
@@ -156,7 +149,7 @@ export const CustomHandle = () => {
       beforeComponent={<StubSlide background="tomato">Before</StubSlide>}
       afterComponent={<StubSlide background="cornflowerblue">After</StubSlide>}
       aspectRatio={16 / 9}
-      handleComponent={CustomHandleComponent}
+      renderHandle={CustomHandleComponent}
     />
   );
 };
@@ -168,7 +161,7 @@ export const CustomHandleDecorations = () => {
       beforeComponent={<StubSlide background="tomato">Before</StubSlide>}
       afterComponent={<StubSlide background="cornflowerblue">After</StubSlide>}
       aspectRatio={16 / 9}
-      handleDecorationComponent={({ value }) => {
+      renderDecoration={({ value }) => {
         return (
           <Fragment>
             <div
@@ -219,7 +212,7 @@ export const CustomElementDecorations = () => {
       defaultValue={50}
       beforeComponent={<StubSlide background="tomato">Before</StubSlide>}
       afterComponent={<StubSlide background="cornflowerblue">After</StubSlide>}
-      beforeDecorationComponent={({ value }) => (
+      renderBeforeDecoration={({ value }) => (
         <div
           css={css`
             position: absolute;
@@ -233,7 +226,7 @@ export const CustomElementDecorations = () => {
           Before ({value}%)
         </div>
       )}
-      afterDecorationComponent={({ value }) => (
+      renderAfterDecoration={({ value }) => (
         <div
           css={css`
             position: absolute;
@@ -247,7 +240,7 @@ export const CustomElementDecorations = () => {
           After ({value}%)
         </div>
       )}
-      handleDecorationComponent={() => null}
+      renderDecoration={() => null}
       aspectRatio={16 / 9}
     />
   );
@@ -264,8 +257,8 @@ export const WithImages = () => {
       <ComparisonSlider
         aspectRatio="4x3"
         defaultValue={50}
-        handleComponent={ConverseHandle}
-        handleDecorationComponent={({ value }) => {
+        renderHandle={ConverseHandle}
+        renderDecoration={({ value }) => {
           return (
             <Fragment>
               <div
@@ -300,79 +293,6 @@ export const WithImages = () => {
         }}
         beforeComponent={<img alt="Converse" src={images[0][0]} />}
         afterComponent={<img alt="Converse" src={images[0][1]} />}
-      />
-    </div>
-  );
-};
-
-export const WithImagesParallax = () => {
-  const [value, setValue] = useState(50);
-  const beforeOffset = lerp(-10, 10, value / 100);
-
-  return (
-    <div
-      css={css`
-        width: 700px;
-        border: 2px solid black;
-        overflow: hidden;
-      `}
-    >
-      <ComparisonSlider
-        aspectRatio="4x3"
-        value={value}
-        onValueChange={setValue}
-        handleComponent={CustomHandleComponent}
-        handleDecorationComponent={({ value }) => {
-          return (
-            <Fragment>
-              <div
-                css={css`
-                  position: absolute;
-                  width: 2px;
-                  background: black;
-                  z-index: 10;
-                  pointer-events: none;
-                `}
-                style={{
-                  left: `calc(${value}% - 1px)`,
-                  height: `calc(50% - 0px)`,
-                }}
-              ></div>
-              <div
-                css={css`
-                  position: absolute;
-                  bottom: 0;
-                  width: 2px;
-                  background: black;
-                  z-index: 10;
-                  pointer-events: none;
-                `}
-                style={{
-                  left: `calc(${value}% - 1px)`,
-                  height: `calc(50% - 0px)`,
-                }}
-              ></div>
-            </Fragment>
-          );
-        }}
-        beforeComponent={
-          <div
-            style={{
-              backgroundImage: `url(${images[1][0]})`,
-              backgroundSize: 'cover',
-              backgroundPosition: `${beforeOffset}px 100%`,
-            }}
-          ></div>
-        }
-        afterComponent={
-          <div
-            style={{
-              backgroundImage: `url(${images[1][1]})`,
-              backgroundSize: 'cover',
-              backgroundPosition: `${beforeOffset}px 100%`,
-            }}
-          ></div>
-        }
       />
     </div>
   );
@@ -420,7 +340,7 @@ export const GooglyEyes = () => {
       beforeComponent={<StubSlide background="tomato">Before</StubSlide>}
       afterComponent={<StubSlide background="cornflowerblue">After</StubSlide>}
       aspectRatio={16 / 9}
-      beforeDecorationComponent={({ value }) => (
+      renderBeforeDecoration={({ value }) => (
         <div
           css={css`
             position: absolute;
@@ -432,7 +352,7 @@ export const GooglyEyes = () => {
           <GooglyEye value={value} />
         </div>
       )}
-      afterDecorationComponent={({ value }) => (
+      renderAfterDecoration={({ value }) => (
         <div
           css={css`
             position: absolute;
@@ -444,7 +364,7 @@ export const GooglyEyes = () => {
           <GooglyEye value={value} />
         </div>
       )}
-      handleComponent={CustomHandleComponent}
+      renderHandle={CustomHandleComponent}
     />
   );
 };
@@ -490,7 +410,7 @@ export const Vertical = () => {
               src={images[imageIndex][1]}
             />
           }
-          handleDecorationComponent={({ value }) => (
+          renderDecoration={({ value }) => (
             <React.Fragment>
               <div
                 style={{ bottom: `${value}%` }}
@@ -506,10 +426,50 @@ export const Vertical = () => {
               ></div>
             </React.Fragment>
           )}
-          handleComponent={ConverseHandle}
+          renderHandle={ConverseHandle}
           aspectRatio={4 / 3}
         />
       </div>
     </Fragment>
+  );
+};
+
+export const DoubleClickReset = () => {
+  const [value, setValue] = useState(50);
+  return (
+    <ComparisonSlider
+      value={value}
+      onValueChange={setValue}
+      beforeComponent={<StubSlide background="tomato">Before</StubSlide>}
+      afterComponent={<StubSlide background="cornflowerblue">After</StubSlide>}
+      aspectRatio={16 / 9}
+      renderHandle={(props) => {
+        return (
+          <div
+            onDoubleClick={() => {
+              setValue(50);
+            }}
+            css={css`
+              background: white;
+              width: 48px;
+              height: 48px;
+              border-radius: 100%;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              color: rgba(0, 0, 0, 0.5);
+              cursor: pointer;
+
+              &:hover {
+                color: rgba(0, 0, 0, 1);
+              }
+            `}
+            {...props}
+          >
+            <BiMoveHorizontal size={24} />
+          </div>
+        );
+      }}
+    />
   );
 };
