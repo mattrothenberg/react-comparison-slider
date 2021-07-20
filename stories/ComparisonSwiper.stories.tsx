@@ -249,14 +249,12 @@ export const DoubleClickReset = () => {
         handleBefore={<div className="bg-black w-1 bottom-0 h-full"></div>}
         aspectRatio={4 / 3}
         handle={(props) => {
-          const { isFocused, ...rest } = props;
           return (
             <div
               onDoubleClick={() => {
                 setValue(50);
               }}
               className="bg-black text-white h-10 w-10 rounded-full flex items-center justify-center"
-              {...rest}
             >
               <BiMoveHorizontal size={24} />
             </div>
@@ -286,10 +284,7 @@ export const OnlyHandleDraggable = () => {
         onlyHandleDraggable
         handle={(props) => {
           return (
-            <div
-              className="bg-black text-white h-10 w-10 rounded-full flex items-center justify-center"
-              {...props}
-            >
+            <div className="bg-black text-white h-10 w-10 rounded-full flex items-center justify-center">
               <BiMoveHorizontal size={24} />
             </div>
           );

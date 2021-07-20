@@ -203,10 +203,6 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
           renderThumb={(params) => {
             let props: ComparisonSliderHandleProps = {
               ...params.props,
-              style: {
-                ...params.props.style,
-                pointerEvents: 'all',
-              },
               isFocused: focused,
             };
             return (
@@ -222,7 +218,7 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
                 onBlur={() => setFocused(false)}
               >
                 <HandleDecoration>{handleBefore}</HandleDecoration>
-                <HandleWrap>
+                <HandleWrap style={{ pointerEvents: 'all' }}>
                   {/* @ts-ignore */}
                   {handle(props)}
                 </HandleWrap>
