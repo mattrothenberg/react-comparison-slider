@@ -1,9 +1,7 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx, css } from '@emotion/react';
 import React, { FC } from 'react';
 import { Direction, Range } from 'react-range';
 import { IThumbProps } from 'react-range/lib/types';
+import { styled } from '@stitches/react';
 
 import { calculateAspectRatio } from './util';
 
@@ -35,43 +33,59 @@ type ComparisonSliderStatefulProps =
       defaultValue?: never;
     };
 
-const elementStyle = css`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+const pinned = {
+  width: '100%',
+  height: '100%',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  position: 'absolute',
+};
 
-  > * {
-    height: 100%;
-  }
+// @ts-ignore
+const Track = styled('div', {
+  background: 'transparent',
+  zIndex: 10,
+  ...pinned,
+});
 
-  > *:not(style) + * {
-    height: unset;
-  }
-`;
+// @ts-ignore
+const RangeWrap = styled('div', pinned);
+
+// @ts-ignore
+const Element = styled('div', {
+  ...pinned,
+
+  '> *': {
+    height: '100%',
+  },
+
+  '> *:not(style) + *': {
+    height: 'unset',
+  },
+});
+
+const Handle = styled('div', {
+  width: 16,
+  height: 16,
+  background: 'white',
+  borderRadius: '100%',
+  border: '1px solid transparent',
+  '&:focus': {
+    outline: 'none',
+    boxShadow: '0 0 0 2px rgba(0, 0, 0, 0.25)',
+    borderColor: 'rgba(0, 0, 0, 1)',
+  },
+});
+
+const AspectWrap = styled('div', {
+  height: 0,
+  position: 'relative',
+});
 
 const DefaultRenderHandle = (props: IThumbProps) => {
-  return (
-    <div
-      css={css`
-        width: 16px;
-        height: 16px;
-        background: white;
-        border-radius: 100%;
-        border: 1px solid transparent;
-
-        &:focus {
-          outline: none;
-          box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
-          border-color: rgba(0, 0, 0, 1);
-        }
-      `}
-      {...props}
-    ></div>
-  );
+  return <Handle {...props}></Handle>;
 };
 
 export const ComparisonSlider: FC<ComparisonSliderProps> = ({
@@ -130,41 +144,23 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
   const slides = isHorizontal ? baseSlides : baseSlides.reverse();
 
   return (
-    <div
-      css={css`
-        height: 0;
-        padding-bottom: ${padding}%;
-        position: relative;
-      `}
-    >
+    <AspectWrap style={{ paddingBottom: `${padding}%` }}>
       <HandleDecorationComponent value={sliderValue} />
 
       <React.Fragment>
         {slides.map((content, index) => {
           return (
-            <div
-              css={elementStyle}
+            <Element
               style={{ clipPath: index === 1 ? clipPath : '' }}
               key={index}
             >
               {content}
-            </div>
+            </Element>
           );
         })}
       </React.Fragment>
 
-      <div
-        css={css`
-          position: absolute;
-          z-index: 10;
-          width: 100%;
-          height: 100%;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-        `}
-      >
+      <RangeWrap>
         <Range
           step={1}
           min={0}
@@ -173,26 +169,11 @@ export const ComparisonSlider: FC<ComparisonSliderProps> = ({
           onChange={(values) => handleChange(values[0])}
           direction={direction}
           renderTrack={({ props, children }) => (
-            <div
-              {...props}
-              css={css`
-                background: transparent;
-                position: absolute;
-                z-index: 10;
-                width: 100%;
-                height: 100%;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-              `}
-            >
-              {children}
-            </div>
+            <Track {...props}>{children}</Track>
           )}
           renderThumb={(params) => renderHandle(params.props)}
         />
-      </div>
-    </div>
+      </RangeWrap>
+    </AspectWrap>
   );
 };
