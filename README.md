@@ -22,7 +22,7 @@ The key ingredients to this component are:
 
 1. `aspectRatio`, expressed either numerically as a fraction (e.g., `16/9`), or as a string (e.g., `"16x9"` or `"16:9"`). Providing an aspect ratio ensures that the before and after "images" (or HTML elements, whatever you decide to provide) line up with one another.
 2. `itemOne` of type `React.ReactNode` or function as a child `({value}) => React.ReactNode`
-3. `itemTwo` of type `React.ReactNode` `({value}) => React.ReactNode`
+3. `itemTwo` of type `React.ReactNode` or function as a child `({value}) => React.ReactNode`
 4. `defaultValue`, if you'd like to use the component in an uncontrolled fashion
 5. `orientation`, where you can pass either `vertical` or `horizontal`. Horizontal sliders are the default.
 
@@ -47,7 +47,7 @@ export const HelloWorldExample = () => {
 React Comparison Slider does ship with some **very** lightweight styling, but encourages you to bring your own styling (BYOS)™️. Customization is handled via a set of render props that expose all of the underlying components for your needs. There is a total of 4 of these visual elements
 
 ```ts
-// For adding a "bar" below the handle (or to the left, if in "vertical" orientation)
+// For adding a "bar" above the handle (or to the left, if in "vertical" orientation)
 handleBefore?: React.ReactNode;
 
 // For adding a "bar" below the handle (or to the right, if in "vertical" orientation)
